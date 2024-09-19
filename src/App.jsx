@@ -1,11 +1,12 @@
 import React from 'react' 
 import './App.css'
+import Registration from './pages/Registration'
 
 function App() { 
 
   return (
     <>
-      <h1 className='text-red-500 text-center'>this ss me</h1>
+       <Registration/>
     </>
   )
 }
