@@ -19,6 +19,10 @@
   src: url('/public/fonts/Inter_18pt-Medium.ttf');
 }; 
 @font-face {
+  font-family: "inter-semibold";
+  src: url('/public/fonts/Inter_18pt-SemiBold.ttf');
+}; 
+@font-face {
   font-family: "inter-bold";
   src: url('/public/fonts/Inter_18pt-Bold.ttf');
 }; 

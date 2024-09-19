@@ -8,6 +8,7 @@ export default {
       inter_Regular:["inter-regular"],
       inter_Bold:["inter-bold"],
       inter_medium:["inter-medium"],
+      inter_semibold:["inter-semibold"],
     }
   },
   plugins: [],
