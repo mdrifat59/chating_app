@@ -4,7 +4,7 @@ const Loginform = () => {
   return (
     <>
          <div className='w-3/5 bg-white shadow-2xl rounded-lg  m-auto'>
-        <div className='py-10 px-5'>
+        <div className='py-16 px-10'>
             <form> 
                  <label className='font-inter_Regular text-[#484848] text-lg mt-3 block'> 
                   <span className='mt-4'>Enter Email</span>
