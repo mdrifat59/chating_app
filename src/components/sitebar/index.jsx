@@ -11,7 +11,7 @@ const Sitebar = () => {
                <div className='w-[106px] h-[106px] rounded-full bg-slate-500'></div>
                <h3 className='font-inter_semibold mt-3 text-xl'>Rifat</h3>
             </div>
-            <div className='flex flex-col gap-7'> 
+            <div className='flex flex-col gap-14'> 
                   <Homeicons/>  
                   <Messageicons/> 
             </div>
