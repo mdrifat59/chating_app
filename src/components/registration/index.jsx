@@ -1,11 +1,16 @@
+import { useFormik } from 'formik'
 import React from 'react' 
 
 const Registrationform = () => {
+  let formik = useFormik({
+    onSubmit:console.log("submited")
+    
+  })
   return (
     <>
         <div className='w-3/5 bg-white shadow-2xl rounded-lg  m-auto'>
         <div className='py-10 px-5'>
-            <form>
+            <form onSubmit={formik.handleSubmit}>
                  <label className='font-inter_Regular text-[#484848] text-lg'>
                  Enter Your Name
                 <input type="text"   className='w-full border outline-none border-[#D8D8D8] py-1 px-2 rounded-md mt-2'  /> 
