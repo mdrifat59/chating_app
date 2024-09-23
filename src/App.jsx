@@ -6,6 +6,7 @@ import Login from './pages/Login'
 import Sitebar from './components/sitebar'
 import Rootlayout from './components/rootlayout/Rootlayout'
 import Homepage from './pages/Homepage'
+import Message from './pages/Message'
 
 function App() { 
   let router =createBrowserRouter(
@@ -13,10 +14,10 @@ function App() {
       <Route>
         <Route element={<Rootlayout/>}>
            <Route path='/' element={<Homepage/>}></Route>
+           <Route path='/message' element={<Message/>}></Route>
         </Route>
            <Route path='/Registration' element={<Registration/>}></Route>
-           <Route path='/login' element={<Login/>}></Route>
-           {/* <Route path='/sitebar' element={<Sitebar/>}></Route> */}
+           <Route path='/login' element={<Login/>}></Route> 
       </Route>
     )
   )
