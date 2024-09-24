@@ -1,11 +1,13 @@
 import { useFormik } from 'formik'
-import React from 'react'
+import React, { useState } from 'react'
 import { singUp } from '../../validation/RegistrationValidation'
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import { getAuth, createUserWithEmailAndPassword, sendEmailVerification } from "firebase/auth";
 import { toast, ToastContainer } from 'react-toastify';
+import { SyncLoader } from 'react-spinners';
 
 const Registrationform = () => {
   const auth = getAuth();
+  let [loading, setLoading]=useState(false)
   let initialValues = {
     fullName: "",
     email: "",
@@ -21,9 +23,26 @@ const Registrationform = () => {
   })
 
   let createNewUsers = () => {
+    setLoading(true);
     createUserWithEmailAndPassword(auth, formik.values.email, formik.values.password)
       .then(() => {
-        console.log("sing up");
+        sendEmailVerification(auth.currentUser).then(()=>{
+          toast.warn('Please Varify your Gamil', {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: true,
+            closeOnClick: false,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light", 
+            });         
+            setLoading(false) 
+        }).catch((error)=>{
+          setLoading(false)
+          console.log(error.message);
+          
+        })
 
       })
       .catch((error) => {
@@ -77,7 +96,7 @@ const Registrationform = () => {
                 formik.errors.confirmPassword && formik.touched.confirmPassword && <p className='font-inter_Regular text-red-500'>{formik.errors.confirmPassword}</p>
               }
             </label>
-            <button className='w-full bg-[#313131] text-[#FFFFFF] px-2 py-2 rounded-md mt-5 font-inter_medium'>Sign Up</button>
+            <button className='w-full bg-[#313131] text-[#FFFFFF] px-2 py-2 rounded-md mt-5 font-inter_medium'>{loading? <SyncLoader color='#ffffff'/>: "Sign Up"}</button>
           </form>
           <p className='font-inter_Regular text-[#000000] font-[16px] mt-5'>Already have an account please <span className='text-[#236DB0] cursor-pointer'>sign in</span></p>
         </div>
