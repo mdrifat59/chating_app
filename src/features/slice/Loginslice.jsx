@@ -3,14 +3,14 @@ import { createSlice } from "@reduxjs/toolkit";
 export const loginSlice = createSlice({
     name:"login",
     initialState:{
-        logged:null
+        loggedIn: JSON.parse(localStorage.getItem("user")) || null
     },
     reducers:{
-        loggetInUser:(state,action)=>{
-            state.logged = action.payload
+        loggedInUser:(state,action)=>{
+            state.loggedIn = action.payload
         },
         loggedOutUser:(state)=>{
-            state.logged = null
+            state.loggedIn = null
         }
     }
 })

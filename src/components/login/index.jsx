@@ -4,10 +4,13 @@ import { singIn } from '../../validation/LoginValidation'
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import { toast, ToastContainer } from 'react-toastify';
 import { SyncLoader } from 'react-spinners';
+import { useDispatch } from 'react-redux';
+import { loggedInUser } from '../../features/slice/Loginslice';
 
 const Loginform = () => {
   const auth = getAuth();
   let [loading, setLoading]=useState(false)
+  let dispatch = useDispatch()
   let initialValues={
     email:"",
     password:""
@@ -25,7 +28,8 @@ const Loginform = () => {
     signInWithEmailAndPassword(auth, formik.values.email, formik.values.password)
   .then(({user}) => {
      if(user.emailVerified == true){
-        console.log("email vaeri")
+         dispatch(loggedInUser(user))
+         localStorage.setItem('user', JSON.stringify(user))
         
      }else{
       toast.error('Please varify your Eamil', {
