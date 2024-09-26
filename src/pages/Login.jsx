@@ -1,7 +1,7 @@
 import React from 'react' 
 import Loginform from '../components/login'
 
-const Login = () => {
+const Loginpage = () => {
   return (
      <>
          <h1 className='font-jotione_Regular text-[80px] text-center my-10 '>TalkNest</h1> 
@@ -12,4 +12,4 @@ const Login = () => {
   )
 }
 
-export default Login
+export default Loginpage
