@@ -1,13 +1,15 @@
 import { useFormik } from 'formik'
 import React, { useState } from 'react'
 import { singUp } from '../../validation/RegistrationValidation'
-import { getAuth, createUserWithEmailAndPassword, sendEmailVerification } from "firebase/auth";
+import { getAuth, createUserWithEmailAndPassword, sendEmailVerification, updateProfile } from "firebase/auth";
 import { toast, ToastContainer } from 'react-toastify';
 import { SyncLoader } from 'react-spinners';
+import { Link, useNavigate } from 'react-router-dom';
 
 const Registrationform = () => {
   const auth = getAuth();
-  let [loading, setLoading]=useState(false)
+  let [loading, setLoading] = useState(false)
+  let navigate = useNavigate()
   let initialValues = {
     fullName: "",
     email: "",
@@ -26,22 +28,43 @@ const Registrationform = () => {
     setLoading(true);
     createUserWithEmailAndPassword(auth, formik.values.email, formik.values.password)
       .then(() => {
-        sendEmailVerification(auth.currentUser).then(()=>{
+        sendEmailVerification(auth.currentUser).then(() => {
           toast.warn('Please Varify your Gamil', {
             position: "top-right",
-            autoClose: 3000,
+            autoClose: 1000,
             hideProgressBar: true,
             closeOnClick: false,
             pauseOnHover: true,
             draggable: true,
             progress: undefined,
-            theme: "light", 
-            });         
-            setLoading(false) 
-        }).catch((error)=>{
+            theme: "light",
+          });
+          updateProfile(auth.currentUser, {
+            displayName: formik.values.fullName
+          }).then(() => {
+            console.log("set display name");
+
+          }).catch((error) => {
+            console.log(error.message);
+          });
+          let fixtime = setTimeout(() => {
+            navigate("/login")
+          }, 2000);
           setLoading(false)
-          console.log(error.message);
-          
+          return () => clearTimeout(fixtime)
+        }).catch((error) => {
+          setLoading(false)
+          toast.error(error.message, {
+            position: "top-right",
+            autoClose: 2000,
+            hideProgressBar: true,
+            closeOnClick: false,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+          });
+
         })
 
       })
@@ -96,9 +119,9 @@ const Registrationform = () => {
                 formik.errors.confirmPassword && formik.touched.confirmPassword && <p className='font-inter_Regular text-red-500'>{formik.errors.confirmPassword}</p>
               }
             </label>
-            <button className='w-full bg-[#313131] text-[#FFFFFF] px-2 py-2 rounded-md mt-5 font-inter_medium'>{loading? <SyncLoader color='#ffffff'/>: "Sign Up"}</button>
+            <button className='w-full bg-[#313131] text-[#FFFFFF] px-2 py-2 rounded-md mt-5 font-inter_medium'>{loading ? <SyncLoader color='#ffffff' /> : "Sign Up"}</button>
           </form>
-          <p className='font-inter_Regular text-[#000000] font-[16px] mt-5'>Already have an account please <span className='text-[#236DB0] cursor-pointer'>sign in</span></p>
+          <p className='font-inter_Regular text-[#000000] font-[16px] mt-5'>Already have an account please <Link to='/login' className='text-[#236DB0] cursor-pointer'>sign in</Link></p>
         </div>
       </div>
     </>
