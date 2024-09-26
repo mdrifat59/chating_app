@@ -32,8 +32,8 @@ const Loginform = () => {
         if (user.emailVerified == true) {
           dispatch(loggedInUser(user))
           localStorage.setItem('user', JSON.stringify(user))
-          navigate('/') 
-          
+          navigate('/')
+
         } else {
           toast.error('Please varify your Eamil', {
             position: "top-right",
@@ -68,8 +68,8 @@ const Loginform = () => {
         setLoading(false)
       });
 
-  } 
-  
+  }
+
   return (
     <>
       <ToastContainer />
@@ -92,7 +92,9 @@ const Loginform = () => {
             </label>
             <button className='w-full bg-[#313131] text-[#FFFFFF] px-2 py-2 rounded-md mt-5 font-inter_medium font-[18px]'>{loading ? <SyncLoader size={12} color='#ffffff' /> : "Sing In"}</button>
           </form>
-          <Link to='/forgotpassword' className='font-inter_Regular font-[16px] text-[#4A4A4A] my-5 underline'>forgot password?</Link>
+          <div className='mt-5'>
+            <Link to='/forgotpassword' className='font-inter_Regular font-[16px] text-[#4A4A4A]  my-5 underline'>forgot password?</Link>
+          </div>
           <p className='font-inter_Regular text-[#000000] font-[16px] mt-5'>Don’t have an account please  <Link to='/registration' className='text-[#236DB0] cursor-pointer'>sign up</Link></p>
         </div>
       </div>
