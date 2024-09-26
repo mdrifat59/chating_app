@@ -2,30 +2,46 @@ import React from 'react'
 import { Homeicons } from '../../svg/HomeIcon'
 import { Messageicons } from '../../svg/MessageIcons'
 import { Backicons } from '../../svg/Back'
+import { getAuth, signOut } from "firebase/auth";
+import { useDispatch } from 'react-redux';
+import { loggedOutUser } from '../../features/slice/Loginslice';
+import { useNavigate } from 'react-router-dom';
 
 const Sitebar = () => {
-  return (
-     <>
+   const auth = getAuth();
+   let dispatch = useDispatch()
+   let navigate = useNavigate()
+   let handleLogout = () => {
+      signOut(auth).then(() => {
+         localStorage.removeItem("user");
+         dispatch(loggedOutUser());
+         navigate('/login')
+      }).catch((error) => {
+         console.log(error.message);
+
+      });
+   }
+   return (
+      <>
          <div className='w-[166px] h-screen bg-[#5E3493] flex flex-col justify-between items-center pt-5 pb-5'>
             <div className='text-center text-[#FFFFFF]'>
                <div className='w-[106px] h-[106px] rounded-full bg-slate-500'></div>
                <h3 className='font-inter_semibold mt-3 text-xl'>Rifat</h3>
             </div>
-            <div className='flex flex-col gap-14'> 
-                  <Homeicons/>  
-                  <Messageicons/> 
+            <div className='flex flex-col gap-14'>
+               <Homeicons />
+               <Messageicons />
             </div>
-            <div >
+            <div onClick={handleLogout} >
                <button className='flex gap-2  items-center'>
-               <Backicons/>
-               <h4 className='font-inter_semibold text-[#FFFFFF] text-xl'> Log Out</h4>
-
+                  <Backicons />
+                  <h4 className='font-inter_semibold text-[#FFFFFF] text-xl'> Log Out</h4>
                </button>
 
             </div>
          </div>
-     </>
-  )
+      </>
+   )
 }
 
 export default Sitebar
