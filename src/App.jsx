@@ -7,6 +7,7 @@ import Login from './pages/Login'
 import Rootlayout from './components/rootlayout/Rootlayout'
 import Homepage from './pages/Homepage'
 import Message from './pages/Message'
+import ForgotPassword from './pages/ForgotPassword';
 
 function App() { 
   let router =createBrowserRouter(
@@ -18,6 +19,7 @@ function App() {
         </Route>
            <Route path='/Registration' element={<Registration/>}></Route>
            <Route path='/login' element={<Login/>}></Route> 
+           <Route path='/forgotpassword' element={<ForgotPassword/>}></Route>
       </Route>
     )
   )
