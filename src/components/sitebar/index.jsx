@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Homeicons } from '../../svg/HomeIcon'
 import { Messageicons } from '../../svg/MessageIcons'
 import { Backicons } from '../../svg/Back'
@@ -6,11 +6,16 @@ import { getAuth, signOut } from "firebase/auth";
 import { useDispatch } from 'react-redux';
 import { loggedOutUser } from '../../features/slice/Loginslice';
 import { useNavigate } from 'react-router-dom';
+import { ProfileimgIcon } from '../../svg/Profileimg'
+import { createPortal } from 'react-dom';
+import Modal from '../Modals';
 
 const Sitebar = () => {
    const auth = getAuth();
    let dispatch = useDispatch()
    let navigate = useNavigate()
+   let [show, setShow] = useState(true)
+   let [hovered, setHovered] = useState(false)
    let handleLogout = () => {
       signOut(auth).then(() => {
          localStorage.removeItem("user");
@@ -25,9 +30,22 @@ const Sitebar = () => {
       <>
          <div className='w-[166px] h-screen bg-[#5E3493] flex flex-col justify-between items-center pt-5 pb-5'>
             <div className='text-center text-[#FFFFFF]'>
-               <div className='w-[106px] h-[106px] rounded-full bg-slate-500'></div>
+               <div className={`w-[106px] h-[106px] rounded-full bg-slate-500 relative ${hovered ? 'bg-opacity-75 cursor-pointer' : ''}`}
+                  onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)} onClick={() => setShow(true)} >
+                  {hovered && (
+                     <div className='absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2'>
+                        <ProfileimgIcon />
+                     </div>
+                  )}
+               </div>
                <h3 className='font-inter_semibold mt-3 text-xl'>Rifat</h3>
             </div>
+            {show &&
+               createPortal(
+                  <Modal setShow={setShow} />, document.body
+               )
+            }
+
             <div className='flex flex-col gap-14'>
                <Homeicons />
                <Messageicons />
