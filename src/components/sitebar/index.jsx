@@ -3,7 +3,7 @@ import { Homeicons } from '../../svg/HomeIcon'
 import { Messageicons } from '../../svg/MessageIcons'
 import { Backicons } from '../../svg/Back'
 import { getAuth, signOut } from "firebase/auth";
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { loggedOutUser } from '../../features/slice/Loginslice';
 import { useNavigate } from 'react-router-dom';
 import { ProfileimgIcon } from '../../svg/Profileimg'
@@ -13,6 +13,7 @@ import Modal from '../Modals';
 const Sitebar = () => {
    const auth = getAuth();
    let dispatch = useDispatch()
+   let user = useSelector((state) => state.login.loggedIn)
    let navigate = useNavigate()
    let [show, setShow] = useState(true)
    let [hovered, setHovered] = useState(false)
@@ -37,6 +38,7 @@ const Sitebar = () => {
                         <ProfileimgIcon />
                      </div>
                   )}
+                  <img src={user.photoURL} className='w-full h-full rounded-full overflow-hidden' alt="" />
                </div>
                <h3 className='font-inter_semibold mt-3 text-xl'>Rifat</h3>
             </div>

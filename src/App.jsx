@@ -10,6 +10,7 @@ import Message from './pages/Message'
 import ForgotPassword from './pages/ForgotPassword';
 import LoggedInUserRoute from './privateRoute/LoggedInuser';
 import NotLoggedInUserRoute from './privateRoute/NotLoggedInUser';
+import "cropperjs/dist/cropper.css";
 
 function App() {
   let router = createBrowserRouter(
