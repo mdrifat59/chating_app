@@ -5,31 +5,34 @@ import { Backicons } from '../../svg/Back'
 import { getAuth, signOut } from "firebase/auth";
 import { useDispatch, useSelector } from 'react-redux';
 import { loggedOutUser } from '../../features/slice/Loginslice';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { ProfileimgIcon } from '../../svg/Profileimg'
 import { createPortal } from 'react-dom';
 import Modal from '../Modals';
 
 const Sitebar = () => {
    const auth = getAuth();
-   let dispatch = useDispatch()
-   let user = useSelector((state) => state.login.loggedIn)
-   let navigate = useNavigate()
-   let [show, setShow] = useState(true)
-   let [hovered, setHovered] = useState(false)
-   let handleLogout = () => {
+   let dispatch = useDispatch();
+   let user = useSelector((state) => state.login.loggedIn);
+   let navigate = useNavigate();
+   let location = useLocation();
+   let [show, setShow] = useState(false);
+   let [hovered, setHovered] = useState(false);
+
+   const handleLogout = () => {
       signOut(auth).then(() => {
          localStorage.removeItem("user");
          dispatch(loggedOutUser());
-         navigate('/login')
+         navigate('/login');
       }).catch((error) => {
          console.log(error.message);
-
       });
-   }
+   };
+
+
    return (
       <>
-         <div className='w-[166px] h-screen bg-[#5E3493] flex flex-col justify-between items-center pt-5 pb-5'>
+         <div className='w-[166px] h-screen bg-[#5E3493] flex flex-col justify-between items-center pt-5 pb-5 '>
             <div className='text-center text-[#FFFFFF]'>
                <div className={`w-[106px] h-[106px] rounded-full bg-slate-500 relative ${hovered ? 'bg-opacity-75 cursor-pointer' : ''}`}
                   onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)} onClick={() => setShow(true)} >
@@ -48,20 +51,49 @@ const Sitebar = () => {
                )
             }
 
-            <div className='flex flex-col gap-14'>
-               <Homeicons />
-               <Messageicons />
+            <div className='flex flex-col gap-12'>
+               <div className='w-full grid grid-cols-3 text-center'>
+                  <div></div>
+                  <div>
+                     <Link to='/' >
+                        <Homeicons />
+                     </Link>
+                  </div>
+                  {
+                     location.pathname === "/" ? (
+                        <div className='text-end bg-white w-1 h-14 text-white ml-auto mr-0'></div>
+                     ) : (
+                        <div></div>
+                     )
+                  }
+               </div>
+               <div className='w-full grid grid-cols-3 text-center'>
+                  <div></div>
+                  <div>
+                     <Link to='/message' >
+                        <Messageicons />
+                     </Link>
+                  </div>
+                  {
+                     location.pathname === "/message" ? (
+                        <div className='text-end bg-white w-1 h-14 text-white ml-auto mr-0'></div>
+                     ) : (
+                        <div></div>
+                     )
+                  }
+               </div>
+
             </div>
+
             <div onClick={handleLogout} >
                <button className='flex gap-2  items-center'>
                   <Backicons />
                   <h4 className='font-inter_semibold text-[#FFFFFF] text-xl'> Log Out</h4>
                </button>
-
             </div>
          </div>
       </>
-   )
-}
+   );
+};
 
-export default Sitebar
+export default Sitebar; 
