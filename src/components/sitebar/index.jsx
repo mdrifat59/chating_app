@@ -9,6 +9,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { ProfileimgIcon } from '../../svg/Profileimg'
 import { createPortal } from 'react-dom';
 import Modal from '../Modals';
+import avaterimg from '../../../public/avater.png'
 
 const Sitebar = () => {
    const auth = getAuth();
@@ -34,14 +35,14 @@ const Sitebar = () => {
       <>
          <div className='w-[166px] h-screen bg-[#5E3493] flex flex-col justify-between items-center pt-5 pb-5 '>
             <div className='text-center text-[#FFFFFF]'>
-               <div className={`w-[106px] h-[106px] rounded-full bg-slate-500 relative ${hovered ? 'bg-opacity-75 cursor-pointer' : ''}`}
+               <div className={`w-[106px] h-[106px] rounded-full bg-white relative ${hovered ? 'bg-opacity-75 cursor-pointer bg-red-500' : ''}`}
                   onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)} onClick={() => setShow(true)} >
                   {hovered && (
                      <div className='absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2'>
                         <ProfileimgIcon />
                      </div>
                   )}
-                  <img src={user.photoURL} className='w-full h-full rounded-full overflow-hidden' alt="" />
+                  <img src={user.photoURL|| avaterimg} className='w-full h-full rounded-full overflow-hidden' alt="" />
                </div>
                <h3 className='font-inter_semibold mt-3 text-xl'>Rifat</h3>
             </div>

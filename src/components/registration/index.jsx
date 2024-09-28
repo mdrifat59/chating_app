@@ -5,8 +5,10 @@ import { getAuth, createUserWithEmailAndPassword, sendEmailVerification, updateP
 import { toast, ToastContainer } from 'react-toastify';
 import { SyncLoader } from 'react-spinners';
 import { Link, useNavigate } from 'react-router-dom';
+import { getDatabase, ref, set } from "firebase/database";
 
 const Registrationform = () => {
+  const db = getDatabase();
   const auth = getAuth();
   let [loading, setLoading] = useState(false)
   let navigate = useNavigate()
@@ -27,7 +29,16 @@ const Registrationform = () => {
   let createNewUsers = () => {
     setLoading(true);
     createUserWithEmailAndPassword(auth, formik.values.email, formik.values.password)
-      .then(() => {
+      .then(({ user }) => {
+        console.log(user);
+        updateProfile(auth.currentUser, {
+          displayName: formik.values.fullName
+        }).then(() => {
+          console.log("set display name");
+
+        }).catch((error) => {
+          console.log(error.message);
+        });
         sendEmailVerification(auth.currentUser).then(() => {
           toast.warn('Please Varify your Gamil', {
             position: "top-right",
@@ -39,33 +50,31 @@ const Registrationform = () => {
             progress: undefined,
             theme: "light",
           });
-          updateProfile(auth.currentUser, {
-            displayName: formik.values.fullName
-          }).then(() => {
-            console.log("set display name");
-
-          }).catch((error) => {
-            console.log(error.message);
-          });
           let fixtime = setTimeout(() => {
             navigate("/login")
           }, 2000);
           setLoading(false)
           return () => clearTimeout(fixtime)
-        }).catch((error) => {
-          setLoading(false)
-          toast.error(error.message, {
-            position: "top-right",
-            autoClose: 2000,
-            hideProgressBar: true,
-            closeOnClick: false,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "light",
+        }).then(() => {
+          set(ref(db, 'users/' + user.uid), {
+            username: user.displayName,
+            email: user.email,
           });
-
         })
+          .catch((error) => {
+            setLoading(false)
+            toast.error(error.message, {
+              position: "top-right",
+              autoClose: 2000,
+              hideProgressBar: true,
+              closeOnClick: false,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: "light",
+            });
+
+          })
 
       })
       .catch((error) => {
