@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Addfriendicon } from '../../svg/Addfriend'
-import { getDatabase, ref, onValue, set, push } from "firebase/database";
+import { getDatabase, ref, onValue, set, push, remove } from "firebase/database";
 import { useSelector } from 'react-redux';
 import { getDownloadURL, getStorage, ref as Ref } from 'firebase/storage';
 import avaterimg from '../../../public/avater.png'
@@ -11,6 +11,7 @@ const AllUser = () => {
     let user = useSelector((state) => state.login.loggedIn)
     let [users, setUsers] = useState([])
     let [friendreq, setFriendreq] = useState([])
+    let [cencelreq, setCencelreq] = useState([])
     useEffect(() => {
         const userRef = ref(db, 'users/');
         onValue(userRef, (snapshot) => {
@@ -52,12 +53,20 @@ const AllUser = () => {
         const friendreqRef = ref(db, 'friendrequest/');
         onValue(friendreqRef, (snapshot) => {
             let reqarr = []
+            let celarr = []
             snapshot.forEach((item) => {
                 reqarr.push(item.val().receiverId + item.val().senderId)
+                celarr.push({ ...item.val(), id: item.key })
             })
             setFriendreq(reqarr)
+            setCencelreq(celarr)
         });
-    })
+    }, [db])
+    // cencel request
+    let handleCencelReq = (item) => {
+        let reqtocencel = cencelreq.find((req) => req.receiverId == item)
+        remove(ref(db, 'friendrequest/' + reqtocencel.id))
+    }
     return (
         <>
             <div className='p-5 shadow-lg w-full h-full  bg-[#FFFFFF] rounded-lg overflow-y-auto '>
@@ -68,7 +77,7 @@ const AllUser = () => {
                 <div className='flex flex-col gap-5 mt-10'>
                     {
                         users.map((item) => (
-                            <div className='flex justify-between items-center'>
+                            <div key={item.id} className='flex justify-between items-center'>
                                 <div className='flex items-center gap-4'>
                                     <div className='w-[82px] h-[82px]  border rounded-full'>
                                         <img src={item.photoURL || avaterimg} className='w-full h-full object-cover rounded-full overflow-hidden' alt="" />
@@ -77,7 +86,7 @@ const AllUser = () => {
                                 </div>
                                 {
                                     friendreq.includes(item.id + user.uid) ?
-                                        <button className='py-2 px-4 bg-[#D34A4A] rounded-lg text-white'>Cencel Req</button> :
+                                        <button className='py-2 px-4 bg-[#D34A4A] rounded-lg text-white' onClick={() => handleCencelReq(item.id)}>Cencel Req</button> :
                                         friendreq.includes(user.uid + item.id) ?
                                             <button className='py-2 px-4 bg-yellow-300 text-black font-inter_medium rounded-lg'>Pending</button> :
                                             <div className='cursor-pointer' onClick={() => handleFriendRequest(item)}>
