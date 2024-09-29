@@ -12,6 +12,7 @@ const AllUser = () => {
     let [users, setUsers] = useState([])
     let [friendreq, setFriendreq] = useState([])
     let [cencelreq, setCencelreq] = useState([])
+    let [search, setSearch] = useState('')
     useEffect(() => {
         const userRef = ref(db, 'users/');
         onValue(userRef, (snapshot) => {
@@ -67,16 +68,18 @@ const AllUser = () => {
         let reqtocencel = cencelreq.find((req) => req.receiverId == item)
         remove(ref(db, 'friendrequest/' + reqtocencel.id))
     }
+    // filter user
+    let filteruser = users.filter((item) => item.username.toLowerCase().includes(search.toLowerCase()))
     return (
         <>
             <div className='p-5 shadow-lg w-full h-full  bg-[#FFFFFF] rounded-lg overflow-y-auto '>
                 <div className='sticky top-0 left-0 bg-[#fff]'>
                     <h2 className='font-inter_semibold text-3xl text-[#494949]'>All Users</h2>
-                    <input type="text" className='w-full py-2 px-3 my-5 border rounded-lg bg-[#F8F8F8] outline-none' placeholder='search users...' />
+                    <input type="text" className='w-full py-2 px-3 my-5 border rounded-lg bg-[#F8F8F8] outline-none' placeholder='search users...' value={search} onChange={(e) => setSearch(e.target.value)} />
                 </div>
                 <div className='flex flex-col gap-5 mt-10'>
                     {
-                        users.map((item) => (
+                        filteruser.map((item) => (
                             <div key={item.id} className='flex justify-between items-center'>
                                 <div className='flex items-center gap-4'>
                                     <div className='w-[82px] h-[82px]  border rounded-full'>
@@ -104,4 +107,4 @@ const AllUser = () => {
     )
 }
 
-export default AllUser
+export default AllUser 
