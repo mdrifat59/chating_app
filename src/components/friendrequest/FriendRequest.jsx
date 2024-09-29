@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react'
-import { getDatabase, ref, onValue } from "firebase/database";
+import { getDatabase, ref, onValue, remove } from "firebase/database";
 import { useSelector } from 'react-redux';
 
 const FriendRequest = () => {
    const db = getDatabase();
    let user = useSelector((state) => state.login.loggedIn)
    let [request, setRequest] = useState([])
+
    useEffect(() => {
       const friendreqRef = ref(db, 'friendrequest/');
       onValue(friendreqRef, (snapshot) => {
@@ -19,6 +20,10 @@ const FriendRequest = () => {
       });
    }, [])
 
+   // Reject Request
+   let handleReject = (item) => {
+      remove(ref(db, "friendrequest/" + item))
+   }
    return (
       <>
          <div className='p-5'>
@@ -31,14 +36,16 @@ const FriendRequest = () => {
                   :
                   request.map((item) => (
 
-                     <div className='flex justify-between items-center'>
+                     <div key={item.id} className='flex justify-between items-center'>
                         <div className='flex items-center gap-5'>
-                           <div className='w-[63px] h-[63px] rounded-full bg-gray-600'></div>
+                           <div className='w-[63px] h-[63px] rounded-full bg-gray-600'>
+                              <img src={item.senderPhoto} className='w-full h-full rounded-full object-cover overflow-hidden' alt="" />
+                           </div>
                            <h3 className='font-inter_Regular text-[23px] text-[#000000]'>{item.senderName}</h3>
                         </div>
                         <div className='flex gap-3' >
                            <button className='py-3 px-10 font-inter_medium text-sm bg-[#4A81D3] text-[#FFFFFF] rounded-lg'>Accept</button>
-                           <button className='py-3 px-10 font-inter_medium text-sm bg-[#D34A4A] text-[#FFFFFF] rounded-lg'>Reject</button>
+                           <button className='py-3 px-10 font-inter_medium text-sm bg-[#D34A4A] text-[#FFFFFF] rounded-lg' onClick={() => handleReject(item.id)}>Reject</button>
                         </div>
                      </div>
                   ))
