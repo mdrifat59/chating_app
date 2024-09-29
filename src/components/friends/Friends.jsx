@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { getDatabase, ref, onValue } from "firebase/database";
+import { getDatabase, ref, onValue, remove } from "firebase/database";
 import { useSelector } from 'react-redux';
 
 const Friends = () => {
@@ -20,6 +20,11 @@ const Friends = () => {
       });
 
    }, [])
+
+   // Unfriend
+   let handleUnfriend = (item) => {
+      remove(ref(db, "friends/" + item))
+   }
    return (
       <>
          <div className='p-5'>
@@ -46,7 +51,7 @@ const Friends = () => {
                               <h3 className='font-inter_Regular text-[23px] text-[#000000]'>{user.uid == item.receiverId ? item.senderName : item.receiverName}</h3>
                            </div>
                            <div className='flex gap-3' >
-                              <button className='py-3 px-8 font-inter_medium text-sm bg-[#4A81D3] text-[#FFFFFF] rounded-lg'>Unfriend</button>
+                              <button className='py-3 px-8 font-inter_medium text-sm bg-[#4A81D3] text-[#FFFFFF] rounded-lg' onClick={() => handleUnfriend(item.id)}>Unfriend</button>
                               <button className='py-3 px-8 font-inter_medium text-sm bg-[#D34A4A] text-[#FFFFFF] rounded-lg'>Block</button>
                            </div>
                         </div>
