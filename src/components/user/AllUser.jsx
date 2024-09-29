@@ -91,7 +91,8 @@ const AllUser = () => {
                                     friendreq.includes(item.id + user.uid) ?
                                         <button className='py-2 px-4 bg-[#D34A4A] rounded-lg text-white' onClick={() => handleCencelReq(item.id)}>Cencel Req</button> :
                                         friendreq.includes(user.uid + item.id) ?
-                                            <button className='py-2 px-4 bg-yellow-300 text-black font-inter_medium rounded-lg'>Pending</button> :
+                                            <button className='py-2 px-4 bg-yellow-300 text-black font-inter_medium rounded-lg'>Pending</button> 
+                                            : 
                                             <div className='cursor-pointer' onClick={() => handleFriendRequest(item)}>
                                                 <Addfriendicon />
                                             </div>
