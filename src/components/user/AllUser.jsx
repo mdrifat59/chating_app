@@ -12,6 +12,7 @@ const AllUser = () => {
     let [users, setUsers] = useState([])
     let [friendreq, setFriendreq] = useState([])
     let [cencelreq, setCencelreq] = useState([])
+    let [friend, setFriend]=useState([])
     let [search, setSearch] = useState('')
     useEffect(() => {
         const userRef = ref(db, 'users/');
@@ -38,6 +39,18 @@ const AllUser = () => {
             })
         });
     }, [db, user.uid, storage])
+
+    // friends show
+    useEffect(() => {
+        const friendRef = ref(db, 'friends/' );
+        onValue(friendRef, (snapshot) => {
+           let friendarr= []
+           snapshot.forEach((item)=>{
+                friendarr.push(item.val().receiverId + item.val().senderId)
+           })
+           setFriend(friendarr)
+        });
+    }, [])
 
     let handleFriendRequest = (data) => {
         set(push(ref(db, 'friendrequest/')), {
@@ -91,8 +104,11 @@ const AllUser = () => {
                                     friendreq.includes(item.id + user.uid) ?
                                         <button className='py-2 px-4 bg-[#D34A4A] rounded-lg text-white' onClick={() => handleCencelReq(item.id)}>Cencel Req</button> :
                                         friendreq.includes(user.uid + item.id) ?
-                                            <button className='py-2 px-4 bg-yellow-300 text-black font-inter_medium rounded-lg'>Pending</button> 
-                                            : 
+                                            <button className='py-2 px-4 bg-yellow-300 text-black font-inter_medium rounded-lg'>Pending</button>
+                                            :
+                                            friend.includes(user.uid + item.id) || friend.includes(item.id + user.uid) ?
+                                             <h2 className='py-2 px-4 bg-green-400 rounded-lg'>Friends</h2>
+                                            :
                                             <div className='cursor-pointer' onClick={() => handleFriendRequest(item)}>
                                                 <Addfriendicon />
                                             </div>
