@@ -11,10 +11,12 @@
 
 import { configureStore } from "@reduxjs/toolkit";
 import loginReducer from "./Loginslice"; // Import the default export, which is the reducer
+import  ActiveSingleReducer   from "../activeslice/ActiveSlice";
 
 const store = configureStore({
     reducer: {
-        login: loginReducer, // Use the reducer, not the entire slice
+        login: loginReducer,  
+        active: ActiveSingleReducer,
     }
 });
 

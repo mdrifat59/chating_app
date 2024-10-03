@@ -4,14 +4,18 @@ import { EmojiIcon } from '../../svg/Emoji'
 import { PictuerIcon } from '../../svg/Pictuer'
 import checkpoto from '../../../public/check.jpg'
 import checkpoto2 from '../../../public/check2.jpg'
+import { useSelector } from 'react-redux'
 
 const Chattingbox = () => {
+  let singlefriend = useSelector((state) => state.active.activefriend)
   return (
     <>
       <div className='w-full h-full relative'>
-        <div className='flex items-center p-5 gap-5 bg-[#F9F9F9]'>
-          <div className='w-[81px] h-[81px] bg-gray-500 rounded-full' ></div>
-          <h3 className='font-inter_medium text-xl text-[#000000]'>MD Rifatul Islam</h3>
+        <div className='flex items-center p-5  gap-5  bg-[#F9F9F9]'>
+          <div className='w-[81px] h-[81px] bg-gray-500 rounded-full' >
+            <img src={singlefriend.profile} className='w-full h-full rounded-full object-cover overflow-hidden' alt="" />
+          </div>
+          <h3 className='font-inter_medium text-xl text-[#000000]'>{singlefriend.name}</h3>
         </div>
         <div className="h-[500px] px-5 overflow-y-auto">
           {/* sender msg */}

@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from 'react'
 import { getDatabase, ref, onValue, remove, set, push } from "firebase/database";
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import ActiveSlice, { ActiveSingle } from '../../features/activeslice/ActiveSlice';
 
 const Friends = () => {
    const db = getDatabase();
    let user = useSelector((state) => state.login.loggedIn)
    let [friend, setFriend] = useState([])
    let [block, setBlock] = useState([])
+   let [friendactive, setFriendactive] = useState("")
+   let dispatch = useDispatch()
 
    // friend show
    useEffect(() => {
@@ -69,6 +72,36 @@ const Friends = () => {
       }
    }
 
+   let handleActive = (item) => {
+      setFriendactive(item.id)
+      if (user.uid == item.receiverId) {
+         dispatch(ActiveSingle({
+            status: "single",
+            id: item.senderId,
+            name: item.senderName,
+            profile: item.senderPhoto
+         }))
+         localStorage.setItem("active", JSON.stringify({
+            status: "single",
+            id: item.senderId,
+            name: item.senderName,
+            profile: item.senderPhoto
+         }))
+      } else {
+         dispatch(ActiveSingle({
+            status: "single",
+            id: item.receiverId,
+            name: item.receiverName,
+            profile: item.receiverPhoto
+         }))
+         localStorage.setItem('active', JSON.stringify({
+            status: "single",
+            id: item.receiverId,
+            name: item.receiverName,
+            profile: item.receiverPhoto
+         }))
+      }
+   }
    return (
       <>
          <div className='p-5'>
@@ -90,7 +123,9 @@ const Friends = () => {
                      );
 
                      return (
-                        <div key={item.key} className='flex justify-between items-center'>
+                        <div key={item.id} className={`flex justify-between px-3 py-2 hover:bg-slate-400 rounded-lg items-center  transition-all ease-linear duration-100 cursor-pointer ${friendactive === item.id ? 'bg-blue-500 text-white' : 'hover:bg-slate-400 hover:text-white'} `}
+                           onClick={() => handleActive(item)}
+                        >
                            <div className='flex items-center gap-5'>
                               <div className='w-[63px] h-[63px] rounded-full bg-gray-600'>
                                  {
@@ -133,6 +168,8 @@ const Friends = () => {
          </div>
       </>
    )
+
+
 }
 
 export default Friends 
