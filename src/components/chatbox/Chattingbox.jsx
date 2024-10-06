@@ -8,6 +8,8 @@ import { useSelector } from 'react-redux'
 import { getDatabase, onValue, push, ref, set } from 'firebase/database'
 import avaterimg from '../../../public/avater.png'
 import { formatDistance } from 'date-fns'
+import EmojiPicker from 'emoji-picker-react'
+// import EmojiPicker from 'emoji-picker-react'
 
 const Chattingbox = () => {
   let db = getDatabase()
@@ -15,6 +17,7 @@ const Chattingbox = () => {
   let user = useSelector((state) => state.login.loggedIn)
   let [message, setMessage] = useState("")
   let [allmessage, setAllmessagea] = useState([])
+  let [emojishow, setEmojishow] = useState(false)
 
   let handleSend = () => {
     if (singlefriend?.status == "single") {
@@ -28,6 +31,7 @@ const Chattingbox = () => {
         date: new Date().toISOString()
       }).then(() => {
         setMessage("")
+        setEmojishow(false)
       })
     }
   }
@@ -42,7 +46,12 @@ const Chattingbox = () => {
       })
       setAllmessagea(arr)
     })
-  }, [])
+  }, [singlefriend.id])
+
+  let handleEmoji = ({ emoji }) => {
+    setMessage(message + emoji)
+
+  }
   return (
     <>
       <div className='w-full h-full relative'>
@@ -55,8 +64,8 @@ const Chattingbox = () => {
         <div className="h-[500px] px-5 overflow-y-auto">
           {
             singlefriend?.status == "single" ?
-              allmessage.map((item) => (
-                <div key={item.key}>
+              allmessage.map((item, index) => (
+                <div key={index}>
                   {
                     item.whosendid == user.uid ? (
                       <div className="w-[65%] ml-auto flex flex-col items-end">
@@ -120,8 +129,18 @@ const Chattingbox = () => {
             <div className='cursor-pointer'>
               <Audioicon />
             </div>
-            <div className='cursor-pointer'>
-              <EmojiIcon />
+            <div className=' flex justify-center items-center gap-2'>
+              <div className='relative'>
+                <div className='cursor-pointer' onClick={() => setEmojishow((prev) => !prev)}>
+                  <EmojiIcon />
+                </div>
+                {
+                  emojishow &&
+                  <div className='absolute bottom-9 -left-24'>
+                    <EmojiPicker onEmojiClick={handleEmoji} />
+                  </div>
+                }
+              </div>
             </div>
             <div className='cursor-pointer'>
               <PictuerIcon />
