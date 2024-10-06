@@ -20,20 +20,26 @@ const Chattingbox = () => {
   let [allmessage, setAllmessagea] = useState([])
   let [emojishow, setEmojishow] = useState(false)
   let choosefile = useRef(null)
+  let scrollRef = useRef()
 
   let handleSend = () => {
-    if (singlefriend?.status == "single") {
-      set(push(ref(db, "singlemessage")), {
-        whosendname: user.displayName,
-        whosendid: user.uid,
-        whoreceivename: singlefriend.name,
-        whoreceiveid: singlefriend.id,
-        message: message,
-        date: new Date().toISOString()
-      }).then(() => {
-        setMessage("")
-        setEmojishow(false)
-      })
+    {
+      message.length > 0 &&
+        <>
+          if (singlefriend?.status == "single") {
+            set(push(ref(db, "singlemessage")), {
+              whosendname: user.displayName,
+              whosendid: user.uid,
+              whoreceivename: singlefriend.name,
+              whoreceiveid: singlefriend.id,
+              message: message,
+              date: new Date().toISOString()
+            }).then(() => {
+              setMessage("")
+              setEmojishow(false)
+            })
+          }
+        </>
     }
   }
 
@@ -84,6 +90,18 @@ const Chattingbox = () => {
     );
 
   }
+  // press enter
+  let handleSendKey = (e) => {
+    if (e.key == 'Enter') {
+      handleSend()
+    }
+  }
+  // scrolling
+  useEffect(() => {
+    scrollRef.current?.scrollIntoView({
+      behavior: "smooth",
+    })
+  }, [message])
   return (
     <>
       <div className='w-full h-full relative'>
@@ -97,7 +115,7 @@ const Chattingbox = () => {
           {
             singlefriend?.status == "single" ?
               allmessage.map((item, index) => (
-                <div key={index}>
+                <div key={index} ref={scrollRef}>
                   {
                     item.whosendid == user.uid ? (
                       item.image ?
@@ -175,10 +193,12 @@ const Chattingbox = () => {
             </div>
           </div>
           <div className='w-full h-full flex items-center '>
-            <input type="text" className='w-full py-3 px-2 outline-none rounded-lg font-semibold' value={message} onChange={(e) => setMessage(e.target.value)} placeholder='type here...' />
+            <input type="text" className='w-full py-3 px-2 outline-none rounded-lg font-semibold' onKeyUp={handleSendKey} value={message} onChange={(e) => setMessage(e.target.value)} placeholder='type here...' />
           </div>
           <div className='w-full h-full '>
-            <button className='font-inter_medium  text-xl bg-[#3E8DEB] text-[#FFFFFF] py-3 px-10 rounded-lg mx-2' onClick={handleSend}>Send</button>
+
+            <button className={`font-inter_medium  text-xl ${message.length > 0 ? 'bg-[#3E8DEB] text-[#FFFFFF]' : 'bg-slate-300 text-slate-700 cursor-not-allowed'}  py-3 px-10 rounded-lg mx-2`} onClick={handleSend} >Send</button>
+
           </div>
         </div>
       </div>
