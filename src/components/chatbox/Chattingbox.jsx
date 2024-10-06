@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Audioicon } from '../../svg/Audio'
 import { EmojiIcon } from '../../svg/Emoji'
 import { PictuerIcon } from '../../svg/Pictuer'
@@ -9,15 +9,17 @@ import { getDatabase, onValue, push, ref, set } from 'firebase/database'
 import avaterimg from '../../../public/avater.png'
 import { formatDistance } from 'date-fns'
 import EmojiPicker from 'emoji-picker-react'
-// import EmojiPicker from 'emoji-picker-react'
+import { getStorage, ref as Ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 
 const Chattingbox = () => {
   let db = getDatabase()
+  const storage = getStorage();
   let singlefriend = useSelector((state) => state.active.activefriend)
   let user = useSelector((state) => state.login.loggedIn)
   let [message, setMessage] = useState("")
   let [allmessage, setAllmessagea] = useState([])
   let [emojishow, setEmojishow] = useState(false)
+  let choosefile = useRef(null)
 
   let handleSend = () => {
     if (singlefriend?.status == "single") {
@@ -27,7 +29,6 @@ const Chattingbox = () => {
         whoreceivename: singlefriend.name,
         whoreceiveid: singlefriend.id,
         message: message,
-        // date: `${new Date().getFullYear()}-${new Date().getMonth() + 1}-${new Date().getDate()}-${new Date().getHours()}-${new Date().getMinutes()}`
         date: new Date().toISOString()
       }).then(() => {
         setMessage("")
@@ -52,6 +53,37 @@ const Chattingbox = () => {
     setMessage(message + emoji)
 
   }
+  let handleImage = (e) => {
+    let imgFile = e.target.files[0]
+    const storageRef = Ref(storage, `${user.displayName}= sendImageMessage/ ${imgFile}`);
+    const uploadTask = uploadBytesResumable(storageRef, imgFile);
+
+    uploadTask.on('state_changed',
+      (snapshot) => {
+        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        console.log('Upload is ' + progress + '% done');
+      },
+      (error) => {
+      },
+      () => {
+        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+          set(push(ref(db, "singlemessage")), {
+            whosendname: user.displayName,
+            whosendid: user.uid,
+            whoreceivename: singlefriend.name,
+            whoreceiveid: singlefriend.id,
+            message: message,
+            image: downloadURL,
+            date: new Date().toISOString()
+          }).then(() => {
+            setMessage("")
+            setEmojishow(false)
+          })
+        });
+      }
+    );
+
+  }
   return (
     <>
       <div className='w-full h-full relative'>
@@ -68,15 +100,32 @@ const Chattingbox = () => {
                 <div key={index}>
                   {
                     item.whosendid == user.uid ? (
-                      <div className="w-[65%] ml-auto flex flex-col items-end">
-                        <p className="bg-sky-400 py-3 px-4 rounded-lg inline-block mt-5 text-white"> {item.message} </p>
-                        <span  > {formatDistance(item.date, new Date(), { addSuffix: true })}</span>
-                      </div>
+                      item.image ?
+                        <div className="w-[65%] ml-auto flex flex-col items-end">
+                          <div className=" py-3 px-3  inline-block mt-5">
+                            <img src={item.image} className='border border-sky-400 rounded-lg object-cover w-full h-full' alt="" />
+                          </div>
+                          <span >{formatDistance(item.date, new Date(), { addSuffix: true })}</span>
+                        </div>
+                        :
+
+                        <div className="w-[65%] ml-auto flex flex-col items-end">
+                          <p className="bg-sky-400 py-3 px-4 rounded-lg inline-block mt-5 text-white"> {item.message} </p>
+                          <span  > {formatDistance(item.date, new Date(), { addSuffix: true })}</span>
+                        </div>
                     ) : (
-                      <div className="w-[65%] flex flex-col items-start">
-                        <p className="bg-slate-400 py-3 px-4 rounded-lg inline-block mt-5 text-white"> {item.message}</p>
-                        <span  > {formatDistance(item.date, new Date(), { addSuffix: true })}</span>
-                      </div>
+                      item.image ?
+                        <div className="w-[65%] ">
+                          <div className=" py-3 px-3  inline-block mt-5">
+                            <img src={item.image} className='border border-slate-400 rounded-lg object-cover w-full h-full' alt="" />
+                          </div>
+                          <span >{formatDistance(item.date, new Date(), { addSuffix: true })}</span>
+                        </div>
+                        :
+                        <div className="w-[65%] flex flex-col items-start">
+                          <p className="bg-slate-400 py-3 px-4 rounded-lg inline-block mt-5 text-white"> {item.message}</p>
+                          <span  > {formatDistance(item.date, new Date(), { addSuffix: true })}</span>
+                        </div>
                     )
                   }
                 </div>
@@ -84,18 +133,7 @@ const Chattingbox = () => {
               : ""
           }
 
-          {/* sender msg */}
-          {/* <div className="w-[65%] ml-auto flex flex-col items-end">
-            <p className="bg-sky-400 py-3 px-3 rounded-lg inline-block mt-5 text-white">Lorem ipsum dolor, sit amet consectetur adipisicing elit. Praesentium quod debitis ex dolore sed expedita natus architecto accusantium autem voluptate totam repellendus, quasi maiores aliquid rem quo deleniti soluta aut? </p>
-            <span  >date</span>
-          </div> */}
-          {/* sender img */}
-          {/* <div className="w-[65%] ml-auto flex flex-col items-end">
-            <div className=" py-3 px-3  inline-block mt-5">
-              <img src={checkpoto} className='border border-sky-400 rounded-lg object-cover w-full h-full' alt="" />
-            </div>
-            <span >date</span>
-          </div> */}
+
           {/* sender audio */}
           {/* <div className="w-[65%] ml-auto flex flex-col items-end">
             <div className=" py-3 px-3  inline-block mt-5">
@@ -103,18 +141,7 @@ const Chattingbox = () => {
             </div>
             <span  >date</span>
           </div> */}
-          {/* receiver msg */}
-          {/* <div className="w-[65%] ">
-            <p className="  bg-slate-400 py-3 px-3 rounded-lg inline-block mt-5 text-white">Lorem ipsum dolor, sit amet consectetur adipisicing elit. Praesentium quod debitis ex dolore sed expedita natus architecto accusantium autem voluptate totam repellendus, quasi maiores aliquid rem quo deleniti soluta aut? </p>
-            <span  >date</span>
-          </div> */}
-          {/* receiver img */}
-          {/* <div className="w-[65%] ">
-            <div className=" py-3 px-3  inline-block mt-5">
-              <img src={checkpoto2} className='border border-slate-400 rounded-lg object-cover w-full h-full' alt="" />
-            </div>
-            <span >date</span>
-          </div> */}
+
           {/* receiver audio */}
           {/* <div className="w-[65%] ">
             <div className=" py-3 px-3  inline-block mt-5">
@@ -142,8 +169,9 @@ const Chattingbox = () => {
                 }
               </div>
             </div>
-            <div className='cursor-pointer'>
+            <div onClick={() => choosefile.current.click()} className='cursor-pointer'>
               <PictuerIcon />
+              <input type="file" ref={choosefile} hidden onChange={handleImage} />
             </div>
           </div>
           <div className='w-full h-full flex items-center '>
