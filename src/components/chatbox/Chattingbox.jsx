@@ -2,14 +2,13 @@ import React, { useEffect, useRef, useState } from 'react'
 import { Audioicon } from '../../svg/Audio'
 import { EmojiIcon } from '../../svg/Emoji'
 import { PictuerIcon } from '../../svg/Pictuer'
-import checkpoto from '../../../public/check.jpg'
-import checkpoto2 from '../../../public/check2.jpg'
 import { useSelector } from 'react-redux'
 import { getDatabase, onValue, push, ref, set } from 'firebase/database'
 import avaterimg from '../../../public/avater.png'
 import { formatDistance } from 'date-fns'
 import EmojiPicker from 'emoji-picker-react'
 import { getStorage, ref as Ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import { AudioRecorder, useAudioRecorder } from 'react-audio-voice-recorder';
 
 const Chattingbox = () => {
   let db = getDatabase()
@@ -21,6 +20,21 @@ const Chattingbox = () => {
   let [emojishow, setEmojishow] = useState(false)
   let choosefile = useRef(null)
   let scrollRef = useRef()
+
+  let recorderControls = useAudioRecorder(
+    {
+      noiseSuppression: true,
+      echoCancellation: true,
+    },
+    (err) => console.table(err)
+  )
+  const addAudioElement = (blob) => {
+    const url = URL.createObjectURL(blob);
+    const audio = document.createElement("audio");
+    audio.src = url;
+    audio.controls = true;
+    // document.body.appendChild(audio); 
+  }; 
 
   let handleSend = () => {
     {
@@ -151,28 +165,11 @@ const Chattingbox = () => {
               : ""
           }
 
-
-          {/* sender audio */}
-          {/* <div className="w-[65%] ml-auto flex flex-col items-end">
-            <div className=" py-3 px-3  inline-block mt-5">
-              <audio src="" controls></audio>
-            </div>
-            <span  >date</span>
-          </div> */}
-
-          {/* receiver audio */}
-          {/* <div className="w-[65%] ">
-            <div className=" py-3 px-3  inline-block mt-5">
-              <audio src="" controls></audio>
-              <span >date</span>
-            </div>
-          </div> */}
-
         </div>
         <div className='absolute bottom-5 left-1/2 -translate-x-1/2 w-[85%] py-4 px-2  bg-[#F5F5F5] rounded-lg grid grid-cols-[2fr,6fr,1fr]'>
           <div className='w-full h-full flex justify-center items-center gap-4'>
-            <div className='cursor-pointer'>
-              <Audioicon />
+            <div className='cursor-pointer ' onClick={() => recorderControls.startRecording()}>
+              <Audioicon />  
             </div>
             <div className=' flex justify-center items-center gap-2'>
               <div className='relative'>
@@ -194,6 +191,13 @@ const Chattingbox = () => {
           </div>
           <div className='w-full h-full flex items-center '>
             <input type="text" className='w-full py-3 px-2 outline-none rounded-lg font-semibold' onKeyUp={handleSendKey} value={message} onChange={(e) => setMessage(e.target.value)} placeholder='type here...' />
+            <div className={!recorderControls.isRecording ? "hidden" : ""}>
+              <AudioRecorder
+                onRecordingComplete={(blob) => addAudioElement(blob)}
+                recorderControls={recorderControls}
+                showVisualizer={true}
+              />
+            </div>
           </div>
           <div className='w-full h-full '>
 
