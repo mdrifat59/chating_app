@@ -18,6 +18,7 @@ const Chattingbox = () => {
   let [message, setMessage] = useState("")
   let [allmessage, setAllmessagea] = useState([])
   let [emojishow, setEmojishow] = useState(false)
+  let [audiourl, setAudiourl] = useState("")
   let choosefile = useRef(null)
   let scrollRef = useRef()
 
@@ -30,12 +31,11 @@ const Chattingbox = () => {
   )
   const addAudioElement = (blob) => {
     const url = URL.createObjectURL(blob);
-    const audio = document.createElement("audio");
-    audio.src = url;
-    audio.controls = true;
-    // document.body.appendChild(audio); 
-  }; 
-
+    // const audio = document.createElement("audio");
+    // audio.src = url;
+    // audio.controls = true;
+    setAudiourl(url)
+  };
   let handleSend = () => {
     {
       message.length > 0 &&
@@ -169,7 +169,7 @@ const Chattingbox = () => {
         <div className='absolute bottom-5 left-1/2 -translate-x-1/2 w-[85%] py-4 px-2  bg-[#F5F5F5] rounded-lg grid grid-cols-[2fr,6fr,1fr]'>
           <div className='w-full h-full flex justify-center items-center gap-4'>
             <div className='cursor-pointer ' onClick={() => recorderControls.startRecording()}>
-              <Audioicon />  
+              <Audioicon />
             </div>
             <div className=' flex justify-center items-center gap-2'>
               <div className='relative'>
@@ -190,14 +190,24 @@ const Chattingbox = () => {
             </div>
           </div>
           <div className='w-full h-full flex items-center '>
-            <input type="text" className='w-full py-3 px-2 outline-none rounded-lg font-semibold' onKeyUp={handleSendKey} value={message} onChange={(e) => setMessage(e.target.value)} placeholder='type here...' />
-            <div className={!recorderControls.isRecording ? "hidden" : ""}>
+            {
+              !recorderControls.isRecording && !audiourl &&
+              <input type="text" className='w-full py-3 px-2 outline-none rounded-lg font-semibold' onKeyUp={handleSendKey} value={message} onChange={(e) => setMessage(e.target.value)} placeholder='type here...' />
+            }
+            <div className={`mx-auto ${!recorderControls.isRecording ? "hidden" : ""}`}>
               <AudioRecorder
                 onRecordingComplete={(blob) => addAudioElement(blob)}
                 recorderControls={recorderControls}
                 showVisualizer={true}
               />
             </div>
+            {
+              audiourl &&
+              <div className='flex gap-5 mx-auto'>
+                <audio src={audiourl} controls className='border border-black rounded-lg'></audio>
+                <button className='py-2 px-5 bg-red-500 text-white rounded-lg' onClick={() => setAudiourl("")}>Cencel</button>
+              </div>
+            }
           </div>
           <div className='w-full h-full '>
 
