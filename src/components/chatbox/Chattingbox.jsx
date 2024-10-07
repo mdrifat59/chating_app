@@ -7,8 +7,9 @@ import { getDatabase, onValue, push, ref, set } from 'firebase/database'
 import avaterimg from '../../../public/avater.png'
 import { formatDistance } from 'date-fns'
 import EmojiPicker from 'emoji-picker-react'
-import { getStorage, ref as Ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import { getStorage, ref as Ref, uploadBytesResumable, getDownloadURL, uploadBytes } from "firebase/storage";
 import { AudioRecorder, useAudioRecorder } from 'react-audio-voice-recorder';
+import { Closeicons } from '../../svg/Close'
 
 const Chattingbox = () => {
   let db = getDatabase()
@@ -18,9 +19,13 @@ const Chattingbox = () => {
   let [message, setMessage] = useState("")
   let [allmessage, setAllmessagea] = useState([])
   let [emojishow, setEmojishow] = useState(false)
+  let [selectedimg, setSelectedimg] = useState(null)
+  let [imagefile, setImagefile] = useState(null)
   let [audiourl, setAudiourl] = useState("")
+  let [blobs, setBlobs] = useState("")
   let choosefile = useRef(null)
   let scrollRef = useRef()
+  let spach = /^(?!\s*$).+/
 
   let recorderControls = useAudioRecorder(
     {
@@ -31,29 +36,61 @@ const Chattingbox = () => {
   )
   const addAudioElement = (blob) => {
     const url = URL.createObjectURL(blob);
-    // const audio = document.createElement("audio");
-    // audio.src = url;
-    // audio.controls = true;
     setAudiourl(url)
+    setBlobs(blob)
   };
+
   let handleSend = () => {
-    {
-      message.length > 0 &&
-        <>
-          if (singlefriend?.status == "single") {
+
+    if (singlefriend?.status == "single") {
+      if (spach.test(message)) {
+        set(push(ref(db, "singlemessage")), {
+          whosendname: user.displayName,
+          whosendid: user.uid,
+          whoreceivename: singlefriend.name,
+          whoreceiveid: singlefriend.id,
+          message: message,
+          date: new Date().toISOString()
+        }).then(() => {
+          setMessage("")
+          setEmojishow(false)
+        })
+      }
+    }
+    if (singlefriend?.status == "single" && imagefile != null) {
+
+      const storageRef = Ref(storage, `${user.displayName}= sendImageMessage/ ${imagefile}`);
+      const uploadTask = uploadBytesResumable(storageRef, imagefile);
+
+      uploadTask.on('state_changed',
+        (snapshot) => {
+          const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          console.log('Upload is ' + progress + '% done');
+        },
+        (error) => {
+          console.log(error);
+
+        },
+        () => {
+          getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
             set(push(ref(db, "singlemessage")), {
               whosendname: user.displayName,
               whosendid: user.uid,
               whoreceivename: singlefriend.name,
               whoreceiveid: singlefriend.id,
-              message: message,
+              message: message || "",
+              image: downloadURL,
               date: new Date().toISOString()
             }).then(() => {
               setMessage("")
               setEmojishow(false)
+              setImagefile(null)
+              setSelectedimg(null)
             })
-          }
-        </>
+          });
+        }
+      );
+
     }
   }
 
@@ -67,7 +104,7 @@ const Chattingbox = () => {
       })
       setAllmessagea(arr)
     })
-  }, [singlefriend.id])
+  }, [singlefriend?.id])
 
   let handleEmoji = ({ emoji }) => {
     setMessage(message + emoji)
@@ -75,34 +112,9 @@ const Chattingbox = () => {
   }
   let handleImage = (e) => {
     let imgFile = e.target.files[0]
-    const storageRef = Ref(storage, `${user.displayName}= sendImageMessage/ ${imgFile}`);
-    const uploadTask = uploadBytesResumable(storageRef, imgFile);
 
-    uploadTask.on('state_changed',
-      (snapshot) => {
-        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-        console.log('Upload is ' + progress + '% done');
-      },
-      (error) => {
-      },
-      () => {
-        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-          set(push(ref(db, "singlemessage")), {
-            whosendname: user.displayName,
-            whosendid: user.uid,
-            whoreceivename: singlefriend.name,
-            whoreceiveid: singlefriend.id,
-            message: message,
-            image: downloadURL,
-            date: new Date().toISOString()
-          }).then(() => {
-            setMessage("")
-            setEmojishow(false)
-          })
-        });
-      }
-    );
-
+    setSelectedimg(URL.createObjectURL(imgFile))
+    setImagefile(imgFile)
   }
   // press enter
   let handleSendKey = (e) => {
@@ -116,6 +128,25 @@ const Chattingbox = () => {
       behavior: "smooth",
     })
   }, [message])
+
+  let handleSendaudio = () => {
+    const storageRef = Ref(storage, `${user.displayName} = audiovoice/${blobs} `);
+    uploadBytes(storageRef, blobs).then((snapshot) => {
+      getDownloadURL(snapshot.ref).then((downloadURL) => {
+        set(push(ref(db, "singlemessage")), {
+          whosendname: user.displayName,
+          whosendid: user.uid,
+          whoreceivename: singlefriend.name,
+          whoreceiveid: singlefriend.id,
+          message: message,
+          audio: downloadURL,
+          date: new Date().toISOString()
+        }).then(() => {
+          setAudiourl("")
+        })
+      });
+    });
+  }
   return (
     <>
       <div className='w-full h-full relative'>
@@ -132,32 +163,48 @@ const Chattingbox = () => {
                 <div key={index} ref={scrollRef}>
                   {
                     item.whosendid == user.uid ? (
-                      item.image ?
+                      item.audio ?
                         <div className="w-[65%] ml-auto flex flex-col items-end">
                           <div className=" py-3 px-3  inline-block mt-5">
-                            <img src={item.image} className='border border-sky-400 rounded-lg object-cover w-full h-full' alt="" />
+                            <audio src={item.audio} controls></audio>
                           </div>
                           <span >{formatDistance(item.date, new Date(), { addSuffix: true })}</span>
                         </div>
                         :
+                        item.image ?
+                          <div className="w-[65%] ml-auto flex flex-col items-end">
+                            <div className=" py-3 px-3  inline-block mt-5">
+                              <img src={item.image} className='border border-sky-400 rounded-lg object-cover w-full h-full' alt="" />
+                            </div>
+                            <span >{formatDistance(item.date, new Date(), { addSuffix: true })}</span>
+                          </div>
+                          :
 
-                        <div className="w-[65%] ml-auto flex flex-col items-end">
-                          <p className="bg-sky-400 py-3 px-4 rounded-lg inline-block mt-5 text-white"> {item.message} </p>
-                          <span  > {formatDistance(item.date, new Date(), { addSuffix: true })}</span>
-                        </div>
+                          <div className="w-[65%] ml-auto flex flex-col items-end">
+                            <p className="bg-sky-400 py-3 px-4 rounded-lg inline-block mt-5 text-white"> {item.message} </p>
+                            <span  > {formatDistance(item.date, new Date(), { addSuffix: true })}</span>
+                          </div>
                     ) : (
-                      item.image ?
+                      item.audio ?
                         <div className="w-[65%] ">
-                          <div className=" py-3 px-3  inline-block mt-5">
-                            <img src={item.image} className='border border-slate-400 rounded-lg object-cover w-full h-full' alt="" />
+                          <div className=" py-3 px-3 mt-5">
+                            <audio src={item.audio} controls ></audio>
                           </div>
                           <span >{formatDistance(item.date, new Date(), { addSuffix: true })}</span>
                         </div>
                         :
-                        <div className="w-[65%] flex flex-col items-start">
-                          <p className="bg-slate-400 py-3 px-4 rounded-lg inline-block mt-5 text-white"> {item.message}</p>
-                          <span  > {formatDistance(item.date, new Date(), { addSuffix: true })}</span>
-                        </div>
+                        item.image ?
+                          <div className="w-[65%] ">
+                            <div className=" py-3 px-3  inline-block mt-5">
+                              <img src={item.image} className='border border-slate-400 rounded-lg object-cover w-full h-full' alt="" />
+                            </div>
+                            <span >{formatDistance(item.date, new Date(), { addSuffix: true })}</span>
+                          </div>
+                          :
+                          <div className="w-[65%] flex flex-col items-start">
+                            <p className="bg-slate-400 py-3 px-4 rounded-lg inline-block mt-5 text-white"> {item.message}</p>
+                            <span  > {formatDistance(item.date, new Date(), { addSuffix: true })}</span>
+                          </div>
                     )
                   }
                 </div>
@@ -209,9 +256,24 @@ const Chattingbox = () => {
               </div>
             }
           </div>
+          <div className='absolute bottom-1/2 left-1/4'>
+            {
+              selectedimg &&
+              <>
+                <img src={selectedimg} className='w-[300px] h-[300px] object-cover overflow-hidden relative' alt="" />
+                <div className='absolute top-2 right-2 text-red-500 cursor-pointer' onClick={() => setSelectedimg(null)}>
+                  <Closeicons />
+                </div>
+              </>
+            }
+          </div>
           <div className='w-full h-full '>
-
-            <button className={`font-inter_medium  text-xl ${message.length > 0 ? 'bg-[#3E8DEB] text-[#FFFFFF]' : 'bg-slate-300 text-slate-700 cursor-not-allowed'}  py-3 px-10 rounded-lg mx-2`} onClick={handleSend} >Send</button>
+            {
+              audiourl ?
+                <button className="font-inter_medium  text-xl  bg-[#3E8DEB] text-[#FFFFFF] py-3 px-10 rounded-lg mx-2" onClick={handleSendaudio} >Send</button>
+                :
+                <button className="font-inter_medium  text-xl bg-[#3E8DEB] text-[#FFFFFF]   py-3 px-10 rounded-lg mx-2" onClick={handleSend} >Send</button>
+            }
 
           </div>
         </div>
