@@ -7,7 +7,7 @@ const Friends = () => {
    const db = getDatabase();
    let user = useSelector((state) => state.login.loggedIn)
    let [friend, setFriend] = useState([])
-   let [block, setBlock] = useState([])
+   let [block, setBlock] = useState([]) 
    let [friendactive, setFriendactive] = useState("")
    let dispatch = useDispatch()
 
@@ -38,6 +38,23 @@ const Friends = () => {
             blockerId: item.senderId,
             blockedName: item.receiverName,
             blockedId: item.receiverId,
+            blockedPhoto: item.receiverPhoto,
+            isblocked: true,
+         }).then(() => {
+            dispatch(ActiveSingle({
+               isblocked: true,
+               status: "single",
+               id: item.receiverId,
+               name: item.receiverName,
+               profile: item.receiverPhoto
+            })),
+               localStorage.setItem("active", JSON.stringify({
+                  isblocked: true,
+                  status: "single",
+                  id: item.receiverId,
+                  name: item.receiverName,
+                  profile: item.receiverPhoto
+               }))
          })
       } else {
          set(push(ref(db, 'blocks/')), {
@@ -45,6 +62,23 @@ const Friends = () => {
             blockerId: item.receiverId,
             blockedName: item.senderName,
             blockedId: item.senderId,
+            blockedPhoto: item.senderPhoto,
+            isblocked: true,
+         }).then(() => {
+            dispatch(ActiveSingle({
+               isblocked: true,
+               status: "single",
+               id: item.senderId,
+               name: item.senderName,
+               profile: item.senderPhoto
+            }))
+            localStorage.setItem("active", JSON.stringify({
+               isblocked: true,
+               status: "single",
+               id: item.senderId,
+               name: item.senderName,
+               profile: item.senderPhoto
+            }))
          })
       }
    }
@@ -68,38 +102,98 @@ const Friends = () => {
          e.blockedId == item.senderId && e.blockerId == user.uid
       )
       if (blocktoremove) {
-         remove(ref(db, "blocks/" + blocktoremove.id))
+         remove(ref(db, "blocks/" + blocktoremove.id)).then(() => {
+            console.log(blocktoremove);
+
+            dispatch(ActiveSingle({
+               isblocked: false,
+               status: "single",
+               id: blocktoremove.blockedId,
+               name: blocktoremove.blockedName,
+               profile: blocktoremove.blockedPhoto
+            }))
+            localStorage.setItem("active", JSON.stringify({
+               isblocked: false,
+               status: "single",
+               id: blocktoremove.blockedId,
+               name: blocktoremove.blockedName,
+               profile: blocktoremove.blockedPhoto
+            }))
+         })
+
       }
    }
 
    let handleActive = (item) => {
+      let blocked = block.some((e) =>
+         e.blockedId == item.receiverId && e.blockerId == user.uid ||
+         e.blockedId == item.senderId && e.blockerId == user.uid
+      )
       setFriendactive(item.id)
       if (user.uid == item.receiverId) {
-         dispatch(ActiveSingle({
-            status: "single",
-            id: item.senderId,
-            name: item.senderName,
-            profile: item.senderPhoto
-         }))
-         localStorage.setItem("active", JSON.stringify({
-            status: "single",
-            id: item.senderId,
-            name: item.senderName,
-            profile: item.senderPhoto
-         }))
+         if (!blocked) {
+            dispatch(ActiveSingle({
+               status: "single",
+               id: item.senderId,
+               name: item.senderName,
+               profile: item.senderPhoto,
+               isblocked: false
+            }))
+            localStorage.setItem("active", JSON.stringify({
+               status: "single",
+               id: item.senderId,
+               name: item.senderName,
+               profile: item.senderPhoto,
+               isblocked: false
+            }))
+         } else {
+            dispatch(ActiveSingle({
+               status: "single",
+               id: item.senderId,
+               name: item.senderName,
+               profile: item.senderPhoto,
+               isblocked: true
+            }))
+            localStorage.setItem("active", JSON.stringify({
+               status: "single",
+               id: item.senderId,
+               name: item.senderName,
+               profile: item.senderPhoto,
+               isblocked: true
+            }))
+         }
       } else {
-         dispatch(ActiveSingle({
-            status: "single",
-            id: item.receiverId,
-            name: item.receiverName,
-            profile: item.receiverPhoto
-         }))
-         localStorage.setItem('active', JSON.stringify({
-            status: "single",
-            id: item.receiverId,
-            name: item.receiverName,
-            profile: item.receiverPhoto
-         }))
+         if (!blocked) {
+            dispatch(ActiveSingle({
+               status: "single",
+               id: item.receiverId,
+               name: item.receiverName,
+               profile: item.receiverPhoto,
+               isblocked: false
+            }))
+            localStorage.setItem('active', JSON.stringify({
+               status: "single",
+               id: item.receiverId,
+               name: item.receiverName,
+               profile: item.receiverPhoto,
+               isblocked: false
+            }))
+         } else {
+            dispatch(ActiveSingle({
+               status: "single",
+               id: item.receiverId,
+               name: item.receiverName,
+               profile: item.receiverPhoto,
+               isblocked: true
+            }))
+            localStorage.setItem('active', JSON.stringify({
+               status: "single",
+               id: item.receiverId,
+               name: item.receiverName,
+               profile: item.receiverPhoto,
+               isblocked: true
+            }))
+         }
       }
    }
    return (

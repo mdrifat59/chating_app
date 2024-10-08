@@ -18,6 +18,7 @@ const Chattingbox = () => {
   let user = useSelector((state) => state.login.loggedIn)
   let [message, setMessage] = useState("")
   let [allmessage, setAllmessagea] = useState([])
+  // let [block, setBlock] = useState([])
   let [emojishow, setEmojishow] = useState(false)
   let [selectedimg, setSelectedimg] = useState(null)
   let [imagefile, setImagefile] = useState(null)
@@ -147,6 +148,17 @@ const Chattingbox = () => {
       });
     });
   }
+  // blokes
+  // useEffect(()=>{
+  //   const blockdRef = ref(db, 'blocks/');
+  //     onValue(blockdRef, (snapshot) => {
+  //        let blockarr = []
+  //        snapshot.forEach((item) => {
+  //           blockarr.push({ ...item.val(), id: item.key })
+  //        })
+  //        setBlock(blockarr)
+  //     });
+  // },[db])
   return (
     <>
       <div className='w-full h-full relative'>
@@ -213,6 +225,7 @@ const Chattingbox = () => {
           }
 
         </div>
+        
         <div className='absolute bottom-5 left-1/2 -translate-x-1/2 w-[85%] py-4 px-2  bg-[#F5F5F5] rounded-lg grid grid-cols-[2fr,6fr,1fr]'>
           <div className='w-full h-full flex justify-center items-center gap-4'>
             <div className='cursor-pointer ' onClick={() => recorderControls.startRecording()}>
@@ -276,7 +289,7 @@ const Chattingbox = () => {
             }
 
           </div>
-        </div>
+        </div> 
       </div>
     </>
   )
