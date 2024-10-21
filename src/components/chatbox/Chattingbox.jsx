@@ -22,9 +22,7 @@ const Chattingbox = () => {
   let [selectedimg, setSelectedimg] = useState(null)
   let [imagefile, setImagefile] = useState(null)
   let [audiourl, setAudiourl] = useState("")
-  let [friends, setfriends] = useState([])
   let [block, setBlock] = useState([])
-  let [lala, setLala] = useState([])
   let [blobs, setBlobs] = useState("")
   let choosefile = useRef(null)
   let scrollRef = useRef()
@@ -150,33 +148,17 @@ const Chattingbox = () => {
       });
     });
   }
-  // console.log(allmessage.some((e)=>e.whoreceiveid));
   useEffect(() => {
     const blockdRef = ref(db, 'blocks/');
     onValue(blockdRef, (snapshot) => {
       let blockarr = []
-      // let incluarr = []
-      snapshot.forEach((item) => {  
-          blockarr.push({ ...item.val(), id: item.key }) 
+      snapshot.forEach((item) => {
+        blockarr.push({ ...item.val(), id: item.key })
       })
       setBlock(blockarr)
-      // setLala(incluarr)
     });
 
-  }, [singlefriend.id])
-  console.log(block);
-  
-  useEffect(() => {
-    const blockdRef = ref(db, 'friends/');
-    onValue(blockdRef, (snapshot) => {
-      let friendarr = []
-      snapshot.forEach((item) => {
-        friendarr.push({ ...item.val(), id: item.key })
-      })
-      setfriends(friendarr)
-    });
-
-  }, [db])
+  }, [singlefriend?.id])
 
   return (
     <>
@@ -186,9 +168,8 @@ const Chattingbox = () => {
             <img src={singlefriend?.profile || avaterimg} className='w-full h-full rounded-full object-cover overflow-hidden' alt="" />
           </div>
           <h3 className='font-inter_medium text-xl text-[#000000]'>{singlefriend?.name || "Choouse your friend"}</h3>
-          <p>{singlefriend.id}</p>
         </div>
-        <div className="h-[500px] px-5 overflow-y-auto">
+        <div className="h-[500px] px-5 overflow-y-auto ">
           {
             singlefriend?.status == "single" ?
               allmessage.map((item, index) => (
@@ -244,83 +225,133 @@ const Chattingbox = () => {
               ))
               : ""
           }
-          {/* second breakets */}
 
-        </div> 
- 
-         
-         {singlefriend !== null && singlefriend?.isblocked && (
-          <div className='absolute bottom-5 left-1/2 -translate-x-1/2 w-[85%] py-4 px-2  bg-[#F5F5F5] rounded-lg '>
-            <p className='text-black bg-red-500'>This chat is blocked  </p>
-          </div>
-        )} 
-         {singlefriend !== null && !singlefriend?.isblocked && (
-          <div className='absolute bottom-5 left-1/2 -translate-x-1/2 w-[85%] py-4 px-2  bg-[#F5F5F5] rounded-lg grid grid-cols-[2fr,6fr,1fr]'>
-            <div className='w-full h-full flex justify-center items-center gap-4'>
-              <div className='cursor-pointer ' onClick={() => recorderControls.startRecording()}>
-                <Audioicon />
-              </div>
-              <div className=' flex justify-center items-center gap-2'>
-                <div className='relative'>
-                  <div className='cursor-pointer' onClick={() => setEmojishow((prev) => !prev)}>
-                    <EmojiIcon />
-                  </div>
-                  {
-                    emojishow &&
-                    <div className='absolute bottom-9 -left-24'>
-                      <EmojiPicker onEmojiClick={handleEmoji} />
+        </div>
+
+        {block.some(
+          (el) =>
+            (el.blockedId === singlefriend.id && el.blockerId === user.uid) ||
+            (el.blockedId === user.uid && el.blockerId === singlefriend.id)
+        ) ?
+          block.find((e) => e.blockedId === user.uid && e.blockerId === singlefriend.id) ?
+            <div className="absolute bottom-5 left-1/2 -translate-x-1/2 w-[85%] py-4 px-2 bg-red-500 rounded-lg">
+              <p className="text-white text-center">This chat is blocked by {singlefriend.name}</p>
+            </div>
+            :
+            <div className="absolute bottom-5 left-1/2 -translate-x-1/2 w-[85%] py-4 px-2 bg-red-500 rounded-lg">
+              <p className="text-white text-center">You blocked this {singlefriend.name}</p>
+            </div>
+          : (
+            <div className="absolute bottom-5 left-1/2 -translate-x-1/2 w-[85%] py-4 px-2  bg-[#F5F5F5] rounded-lg grid grid-cols-[2fr,6fr,1fr]">
+              <div className="w-full h-full flex justify-center items-center gap-4">
+                <div
+                  className="cursor-pointer "
+                  onClick={() => recorderControls.startRecording()}
+                >
+                  <Audioicon />
+                </div>
+                <div className=" flex justify-center items-center gap-2">
+                  <div className="relative">
+                    <div
+                      className="cursor-pointer"
+                      onClick={() => setEmojishow((prev) => !prev)}
+                    >
+                      <EmojiIcon />
                     </div>
-                  }
-                </div>
-              </div>
-              <div onClick={() => choosefile.current.click()} className='cursor-pointer'>
-                <PictuerIcon />
-                <input type="file" ref={choosefile} hidden onChange={handleImage} />
-              </div>
-            </div>
-            <div className='w-full h-full flex items-center '>
-              {
-                !recorderControls.isRecording && !audiourl &&
-                <input type="text" className='w-full py-3 px-2 outline-none rounded-lg font-semibold' onKeyUp={handleSendKey} value={message} onChange={(e) => setMessage(e.target.value)} placeholder='type here...' />
-              }
-              <div className={`mx-auto ${!recorderControls.isRecording ? "hidden" : ""}`}>
-                <AudioRecorder
-                  onRecordingComplete={(blob) => addAudioElement(blob)}
-                  recorderControls={recorderControls}
-                  showVisualizer={true}
-                />
-              </div>
-              {
-                audiourl &&
-                <div className='flex gap-5 mx-auto'>
-                  <audio src={audiourl} controls className='border border-black rounded-lg'></audio>
-                  <button className='py-2 px-5 bg-red-500 text-white rounded-lg' onClick={() => setAudiourl("")}>Cencel</button>
-                </div>
-              }
-            </div>
-            <div className='absolute bottom-1/2 left-1/4'>
-              {
-                selectedimg &&
-                <>
-                  <img src={selectedimg} className='w-[300px] h-[300px] object-cover overflow-hidden relative' alt="" />
-                  <div className='absolute top-2 right-2 text-red-500 cursor-pointer' onClick={() => setSelectedimg(null)}>
-                    <Closeicons />
+                    {emojishow && (
+                      <div className="absolute bottom-9 -left-24">
+                        <EmojiPicker onEmojiClick={handleEmoji} />
+                      </div>
+                    )}
                   </div>
-                </>
-              }
+                </div>
+                <div
+                  onClick={() => choosefile.current.click()}
+                  className="cursor-pointer"
+                >
+                  <PictuerIcon />
+                  <input
+                    type="file"
+                    ref={choosefile}
+                    hidden
+                    onChange={handleImage}
+                  />
+                </div>
+              </div>
+              <div className="w-full h-full flex items-center ">
+                {!recorderControls.isRecording && !audiourl && (
+                  <input
+                    type="text"
+                    className="w-full py-3 px-2 outline-none rounded-lg font-semibold"
+                    onKeyUp={handleSendKey}
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                    placeholder="type here..."
+                  />
+                )}
+                <div
+                  className={`mx-auto ${!recorderControls.isRecording ? "hidden" : ""
+                    }`}
+                >
+                  <AudioRecorder
+                    onRecordingComplete={(blob) => addAudioElement(blob)}
+                    recorderControls={recorderControls}
+                    showVisualizer={true}
+                  />
+                </div>
+                {audiourl && (
+                  <div className="flex gap-5 mx-auto">
+                    <audio
+                      src={audiourl}
+                      controls
+                      className="border border-black rounded-lg"
+                    ></audio>
+                    <button
+                      className="py-2 px-5 bg-red-500 text-white rounded-lg"
+                      onClick={() => setAudiourl("")}
+                    >
+                      Cencel
+                    </button>
+                  </div>
+                )}
+              </div>
+              <div className="absolute bottom-1/2 left-1/4">
+                {selectedimg && (
+                  <>
+                    <img
+                      src={selectedimg}
+                      className="w-[300px] h-[300px] object-cover overflow-hidden relative"
+                      alt=""
+                    />
+                    <div
+                      className="absolute top-2 right-2 text-red-500 cursor-pointer"
+                      onClick={() => setSelectedimg(null)}
+                    >
+                      <Closeicons />
+                    </div>
+                  </>
+                )}
+              </div>
+              <div className="w-full h-full ">
+                {audiourl ? (
+                  <button
+                    className="font-inter_medium  text-xl  bg-[#3E8DEB] text-[#FFFFFF] py-3 px-10 rounded-lg mx-2"
+                    onClick={handleSendaudio}
+                  >
+                    Send
+                  </button>
+                ) : (
+                  <button
+                    className="font-inter_medium  text-xl bg-[#3E8DEB] text-[#FFFFFF]   py-3 px-10 rounded-lg mx-2"
+                    onClick={handleSend}
+                  >
+                    Send
+                  </button>
+                )}
+              </div>
             </div>
-            <div className='w-full h-full '>
-              {
-                audiourl ?
-                  <button className="font-inter_medium  text-xl  bg-[#3E8DEB] text-[#FFFFFF] py-3 px-10 rounded-lg mx-2" onClick={handleSendaudio} >Send</button>
-                  :
-                  <button className="font-inter_medium  text-xl bg-[#3E8DEB] text-[#FFFFFF]   py-3 px-10 rounded-lg mx-2" onClick={handleSend} >Send</button>
-              }
+          )}
 
-            </div>
-          </div> 
-        ) 
-      } 
       </div>
     </>
   )
