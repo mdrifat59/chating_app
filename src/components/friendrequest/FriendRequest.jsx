@@ -44,7 +44,7 @@ const FriendRequest = () => {
                   :
                   request.map((item) => (
 
-                     <div key={item.id} className='flex justify-between items-center'>
+                     <div key={item.id} className='flex justify-between items-center gap-10'>
                         <div className='flex items-center gap-5'>
                            <div className='w-[63px] h-[63px] rounded-full bg-gray-600'>
                               <img src={item.senderPhoto} className='w-full h-full rounded-full object-cover overflow-hidden' alt="" />

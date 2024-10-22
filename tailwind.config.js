@@ -11,6 +11,8 @@ export default {
       inter_semibold:["inter-semibold"],
     }
   },
-  plugins: [],
+  plugins: [
+    require('tailwind-scrollbar'),
+  ],
 }
 

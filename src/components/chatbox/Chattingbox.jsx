@@ -169,7 +169,7 @@ const Chattingbox = () => {
           </div>
           <h3 className='font-inter_medium text-xl text-[#000000]'>{singlefriend?.name || "Choouse your friend"}</h3>
         </div>
-        <div className="h-[500px] px-5 overflow-y-auto ">
+        <div className="h-[500px] w-full px-5 overflow-y-auto  scrollbar-thin">
           {
             singlefriend?.status == "single" ?
               allmessage.map((item, index) => (
