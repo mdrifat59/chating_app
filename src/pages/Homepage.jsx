@@ -2,10 +2,14 @@ import React from 'react'
 import AllUser from '../components/user/AllUser'
 import FriendRequest from '../components/friendrequest/FriendRequest'
 import Friends from '../components/friends/Friends'
+import { Helmet } from 'react-helmet'
 
 const Homepage = () => {
   return (
      <>
+      <Helmet>
+        <title>Home</title>
+      </Helmet>
         <div className='w-11/12 grid grid-cols-[2.1fr,5fr] '> 
             <div className='w-full p-5'>
                 <AllUser/>                
