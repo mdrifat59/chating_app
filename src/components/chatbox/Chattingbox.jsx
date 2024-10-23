@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+ import React, { useEffect, useRef, useState } from 'react'
 import { Audioicon } from '../../svg/Audio'
 import { EmojiIcon } from '../../svg/Emoji'
 import { PictuerIcon } from '../../svg/Pictuer'
@@ -162,7 +162,7 @@ const Chattingbox = () => {
 
   return (
     <>
-      <div className='w-full h-full relative'>
+      <div className='w-full relative h-[95vh] bg-[#FFFFFF] border shadow-lg rounded-lg'>
         <div className='flex items-center p-5  gap-5  bg-[#F9F9F9]'>
           <div className='w-[81px] h-[81px] bg-gray-500 rounded-full' >
             <img src={singlefriend?.profile || avaterimg} className='w-full h-full rounded-full object-cover overflow-hidden' alt="" />
@@ -217,7 +217,7 @@ const Chattingbox = () => {
                           :
                           <div className="w-[65%] flex flex-col items-start">
                             <p className="bg-slate-400 py-3 px-4 rounded-lg inline-block mt-5 text-white"> {item.message}</p>
-                            <span  > {formatDistance(item.date, new Date(), { addSuffix: true })}</span>
+                            <span > {formatDistance(item.date, new Date(), { addSuffix: true })}</span>
                           </div>
                     )
                   }
@@ -358,4 +358,5 @@ const Chattingbox = () => {
 }
 
 export default Chattingbox
+
 

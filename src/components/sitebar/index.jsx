@@ -53,16 +53,16 @@ const Sitebar = () => {
             }
 
             <div className='flex flex-col gap-12'>
-               <div className='w-full grid grid-cols-3 text-center'>
+               <div className='w-full grid grid-cols-3 text-center '>
                   <div></div>
-                  <div>
+                  <div className='relative'>
                      <Link to='/' >
                         <Homeicons />
                      </Link>
                   </div>
                   {
                      location.pathname === "/" ? (
-                        <div className='text-end bg-white w-1 h-14 text-white ml-auto mr-0'></div>
+                        <div className='absolute text-end bg-white w-1 h-14 text-white ml-[155px] mr-0'></div>
                      ) : (
                         <div></div>
                      )
@@ -77,7 +77,7 @@ const Sitebar = () => {
                   </div>
                   {
                      location.pathname === "/message" ? (
-                        <div className='text-end bg-white w-1 h-14 text-white ml-auto mr-0'></div>
+                        <div className='absolute text-end bg-white w-1 h-14 text-white ml-[155px] mr-0'></div>
                      ) : (
                         <div></div>
                      )

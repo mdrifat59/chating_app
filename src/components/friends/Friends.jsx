@@ -105,8 +105,8 @@ const Friends = () => {
       }
    }
    return (
-      <>
-         <div className='p-5'>
+      <> 
+         <div className='bg-[#FFFFFF] shadow-lg rounded-lg border overflow-y-auto scrollbar-thin p-5 h-[95vh]'>
             <h2 className='font-inter_semibold text-3xl text-[#494949] mb-10'>My Friends</h2>
             <div className='flex flex-col gap-y-5'>
                {friend.length == "0" ? (
@@ -125,7 +125,7 @@ const Friends = () => {
                      );
 
                      return (
-                        <div key={item.id} className={`flex justify-between px-3 py-2 hover:bg-red-400 rounded-lg items-center  transition-all ease-linear duration-100 cursor-pointer gap-10 ${friendactive === item.id ? 'bg-blue-500 text-white' : 'hover:bg-slate-400 hover:text-white'} `}
+                        <div key={item.id} className={`flex justify-between  py-2 hover:bg-red-400 rounded-lg items-center  transition-all ease-linear duration-100 cursor-pointer gap-10 ${friendactive === item.id ? 'bg-blue-500 text-white' : 'hover:bg-slate-400 hover:text-white'} `}
                            onClick={() => handleActive(item)}
                         >
                            <div className='flex items-center gap-5'>

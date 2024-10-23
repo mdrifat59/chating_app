@@ -34,7 +34,7 @@ const FriendRequest = () => {
    ]
    return (
       <>
-         <div className='p-5'>
+         <div className='p-5 bg-[#FFFFFF] border shadow-lg rounded-lg overflow-y-auto scrollbar-thin h-[95vh]'>
             <h2 className='font-inter_semibold text-3xl text-[#494949] mb-10'>Friend Request</h2>
             <div className='flex flex-col gap-y-5'>
                {request.length == "0" ?

@@ -6,15 +6,15 @@ import Friends from '../components/friends/Friends'
 const Homepage = () => {
   return (
      <>
-        <div className='grid grid-cols-[2.2fr,5fr] gap-5 m-5 '> 
-            <div className='w-full h-[95vh] border  bg-[#FFFFFF] scrollbar-thin '>
+        <div className='w-11/12 grid grid-cols-[2.1fr,5fr] '> 
+            <div className='w-full p-5'>
                 <AllUser/>                
             </div> 
-            <div className='w-full h-[95vh] grid grid-cols-2 gap-5'>
-                <div className='w-full bg-[#FFFFFF] border shadow-lg rounded-lg overflow-y-auto scrollbar-thin'>
+            <div className='w-full h-[95vh] grid grid-cols-2 '>
+                <div className='w-full p-5'>
                   <FriendRequest/>
                 </div>
-                <div className='w-full bg-[#FFFFFF] shadow-lg rounded-lg border overflow-y-auto scrollbar-thin'>
+                <div className='w-full p-5'>
                     <Friends/>
                 </div>
             </div>
