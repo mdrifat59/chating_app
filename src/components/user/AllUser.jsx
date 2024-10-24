@@ -56,10 +56,10 @@ const AllUser = () => {
         set(push(ref(db, 'friendrequest/')), {
             senderName: user.displayName,
             senderId: user.uid,
-            senderPhoto: user.photoURL ?? "/public/avater.png",
+            senderPhoto: user.photoURL ?? "/avater.png",
             receiverName: data.username,
             receiverId: data.id,
-            receiverPhoto: data.photoURL ?? "/public/avater.png"
+            receiverPhoto: data.photoURL ?? "/avater.png"
         });
     }
 
