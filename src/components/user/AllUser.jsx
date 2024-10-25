@@ -3,7 +3,7 @@ import { Addfriendicon } from '../../svg/Addfriend'
 import { getDatabase, ref, onValue, set, push, remove } from "firebase/database";
 import { useSelector } from 'react-redux';
 import { getDownloadURL, getStorage, ref as Ref } from 'firebase/storage';
-import avaterimg from '../../../public/avater.png'
+import avaterimg from '/public/avater.png'
 
 const AllUser = () => {
     const db = getDatabase();
@@ -56,10 +56,10 @@ const AllUser = () => {
         set(push(ref(db, 'friendrequest/')), {
             senderName: user.displayName,
             senderId: user.uid,
-            senderPhoto: user.photoURL ?? "../../../public/avater.png",
+            senderPhoto: user.photoURL ?? "/public/avater.png",
             receiverName: data.username,
             receiverId: data.id,
-            receiverPhoto: data.photoURL ?? "../../../public/avater.png"
+            receiverPhoto: data.photoURL ?? "/public/avater.png"
         });
     }
 

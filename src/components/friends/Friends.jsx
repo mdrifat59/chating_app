@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { getDatabase, ref, onValue, remove, set, push } from "firebase/database";
 import { useDispatch, useSelector } from 'react-redux';
 import { ActiveSingle } from '../../features/activeslice/ActiveSlice';
-import avaterimg from '../../../public/avater.png'
+import avaterimg from '/public/avater.png'
 import { useNavigate } from 'react-router-dom';
 
 const Friends = () => {

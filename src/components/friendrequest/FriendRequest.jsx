@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { getDatabase, ref, onValue, remove, set, push } from "firebase/database";
 import { useSelector } from 'react-redux';
-import avaterimg from '../../../public/avater.png'
+import avaterimg from '/public/avater.png'
 
 const FriendRequest = () => {
    const db = getDatabase();
@@ -41,6 +41,8 @@ const FriendRequest = () => {
                {request.length == "0" ?
                   <div className='flex justify-center items-center h-56'>
                      <h2 className='text-3xl'>No Friend Request</h2>
+                     {/* <img src="/public/avater.png" alt="" /> */}
+                     {/* <img src="/avater.png" alt="" /> */}
                   </div>
                   :
                   request.map((item) => (
