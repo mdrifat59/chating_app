@@ -56,10 +56,10 @@ const AllUser = () => {
         set(push(ref(db, 'friendrequest/')), {
             senderName: user.displayName,
             senderId: user.uid,
-            senderPhoto: user.photoURL ?? "/avater.png",
+            senderPhoto: user.photoURL ?? "../../../public/avater.png",
             receiverName: data.username,
             receiverId: data.id,
-            receiverPhoto: data.photoURL ?? "/avater.png"
+            receiverPhoto: data.photoURL ?? "../../../public/avater.png"
         });
     }
 
@@ -95,7 +95,7 @@ const AllUser = () => {
                         filteruser.map((item) => (
                             <div key={item.id} className='flex justify-between items-center '>
                                 <div className='flex items-center gap-4 '>
-                                    <div className='w-[82px] h-[82px]  border rounded-full'>
+                                    <div className='w-[82px] h-[82px] bg-gray-700 border rounded-full'>
                                         <img src={item.photoURL || avaterimg} className='w-full h-full object-cover rounded-full overflow-hidden' alt="" />
                                     </div>
                                     <h3 className='font-inter_medium text-[23px] text-[#3D3C3C]'>{item.username}</h3>

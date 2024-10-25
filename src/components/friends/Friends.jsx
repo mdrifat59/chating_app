@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react'
 import { getDatabase, ref, onValue, remove, set, push } from "firebase/database";
 import { useDispatch, useSelector } from 'react-redux';
 import { ActiveSingle } from '../../features/activeslice/ActiveSlice';
+import avaterimg from '../../../public/avater.png'
+import { useNavigate } from 'react-router-dom';
 
 const Friends = () => {
    const db = getDatabase();
@@ -10,6 +12,7 @@ const Friends = () => {
    let [block, setBlock] = useState([])
    let [friendactive, setFriendactive] = useState("")
    let dispatch = useDispatch()
+   let navigate = useNavigate()
 
    // friend show
    useEffect(() => {
@@ -24,7 +27,7 @@ const Friends = () => {
          setFriend(arr)
       });
 
-   }, [db])
+   }, [db,user.uid])
 
    // Unfriend
    let handleUnfriend = (item) => {
@@ -128,13 +131,13 @@ const Friends = () => {
                         <div key={item.id} className={`flex justify-between  py-2 hover:bg-red-400 rounded-lg items-center  transition-all ease-linear duration-100 cursor-pointer gap-10 ${friendactive === item.id ? 'bg-blue-500 text-white' : 'hover:bg-slate-400 hover:text-white'} `}
                            onClick={() => handleActive(item)}
                         >
-                           <div className='flex items-center gap-5'>
+                           <div className='flex items-center gap-5 'onClick={()=>navigate("/message")}>
                               <div className='w-[63px] h-[63px] rounded-full bg-gray-600 '>
                                  {
                                     user.uid == item.senderId ?
-                                       <img src={item.receiverPhoto} className='w-full h-full rounded-full object-cover overflow-hidden' alt="" />
+                                       <img src={item.receiverPhoto || avaterimg} className='w-full h-full rounded-full object-cover overflow-hidden' alt="" />
                                        :
-                                       <img src={item.senderPhoto} className='w-full h-full rounded-full object-cover overflow-hidden' alt="" />
+                                       <img src={item.senderPhoto || avaterimg} className='w-full h-full rounded-full object-cover overflow-hidden' alt="" />
                                  }
                               </div>
 

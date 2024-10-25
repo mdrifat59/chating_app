@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { getDatabase, ref, onValue, remove, set, push } from "firebase/database";
 import { useSelector } from 'react-redux';
+import avaterimg from '../../../public/avater.png'
 
 const FriendRequest = () => {
    const db = getDatabase();
@@ -18,7 +19,7 @@ const FriendRequest = () => {
          })
          setRequest(reqarr)
       });
-   }, [])
+   }, [db, user.uid])
 
    // Reject Request
    let handleReject = (item) => {
@@ -44,16 +45,16 @@ const FriendRequest = () => {
                   :
                   request.map((item) => (
 
-                     <div key={item.id} className='flex justify-between items-center gap-10'>
+                     <div key={item.id} className='flex justify-between items-center gap-5'>
                         <div className='flex items-center gap-5'>
                            <div className='w-[63px] h-[63px] rounded-full bg-gray-600'>
-                              <img src={item.senderPhoto} className='w-full h-full rounded-full object-cover overflow-hidden' alt="" />
+                              <img src={item.senderPhoto || avaterimg} className='w-full h-full rounded-full object-cover overflow-hidden' alt="" />
                            </div>
                            <h3 className='font-inter_Regular text-[23px] text-[#000000]'>{item.senderName}</h3>
                         </div>
                         <div className='flex gap-3' >
-                           <button className='py-3 px-10 font-inter_medium text-sm bg-[#4A81D3] text-[#FFFFFF] rounded-lg' onClick={()=>handleAccept(item)}>Accept</button>
-                           <button className='py-3 px-10 font-inter_medium text-sm bg-[#D34A4A] text-[#FFFFFF] rounded-lg' onClick={() => handleReject(item.id)}>Reject</button>
+                           <button className='py-3 px-8 font-inter_medium text-sm bg-[#4A81D3] text-[#FFFFFF] rounded-lg' onClick={()=>handleAccept(item)}>Accept</button>
+                           <button className='py-3 px-8 font-inter_medium text-sm bg-[#D34A4A] text-[#FFFFFF] rounded-lg' onClick={() => handleReject(item.id)}>Reject</button>
                         </div>
                      </div>
                   ))

@@ -1,18 +1,21 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Closeicons } from '../../svg/Close'
 import { Cropper } from 'react-cropper'
 import { getDownloadURL, getStorage, ref, uploadString } from "firebase/storage";
 import { useDispatch, useSelector } from 'react-redux';
 import { getAuth, updateProfile } from "firebase/auth";
 import { loggedInUser } from '../../features/slice/Loginslice';
+import { SyncLoader } from 'react-spinners';
 
 const ImageCropper = ({ setImage, cropperRef, image, setCropData, setShow }) => {
     const storage = getStorage();
     const auth = getAuth();
     let user = useSelector((state) => state.login.loggedIn)
+    let [loading, setLoading] = useState(false)
     const storageRef = ref(storage, user.uid);
     let dispatch = useDispatch()
     const getCropData = () => {
+        setLoading(true)
         if (typeof cropperRef.current?.cropper !== "undefined") {
             setCropData(cropperRef.current?.cropper.getCroppedCanvas().toDataURL());
             const message4 = cropperRef.current?.cropper.getCroppedCanvas().toDataURL();
@@ -24,6 +27,7 @@ const ImageCropper = ({ setImage, cropperRef, image, setCropData, setShow }) => 
                         dispatch(loggedInUser({ ...user, photoURL: downloadURL }))
                         localStorage.setItem('user', JSON.stringify({ ...user, photoURL: downloadURL }))
                         setShow(false)
+                        setLoading(false)
                     }).catch((error) => {
                         console.log(error.message);
 
@@ -68,7 +72,7 @@ const ImageCropper = ({ setImage, cropperRef, image, setCropData, setShow }) => 
                             guides={true}
                         />
                     </div>
-                    <button className='bg-blue-500 text-white w-full mt-5 py-2 rounded-md' onClick={getCropData}>Upload</button>
+                    <button className='bg-blue-500 text-white w-full mt-5 py-2 rounded-md' onClick={getCropData}>{loading ? <SyncLoader color='#ffffff' /> : "Upload"}</button>
                 </div>
             </div>
         </>
