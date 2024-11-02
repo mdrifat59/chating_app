@@ -82,7 +82,9 @@ const AllUser = () => {
         remove(ref(db, 'friendrequest/' + reqtocencel.id))
     }
     // filter user
-    let filteruser = users.filter((item) => item.username.toLowerCase().includes(search.toLowerCase()))
+    // let filteruser = users.filter((item) => item.username.toLowerCase().includes(search.toLowerCase()))
+    let filteruser = users.filter((item) => item.username && item.username.toLowerCase().includes(search.toLowerCase()))
+
     return (
         <> 
             <div className='h-[95vh] border  bg-[#FFFFFF] scrollbar-thin p-5 shadow-lg  overflow-y-auto rounded-md '>
